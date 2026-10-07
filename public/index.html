@@ -19,7 +19,6 @@
       </div>
 
       <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-        <!-- Coin Seçim Menüsü -->
         <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg">
           <label for="coin-select" class="text-xs text-slate-400 font-semibold">Coin:</label>
           <select id="coin-select" onchange="changeCoin()" class="bg-slate-900 text-amber-400 font-bold text-sm rounded px-2 py-1 focus:outline-none border border-slate-700 cursor-pointer">
@@ -85,8 +84,6 @@
 
     <!-- ANA İÇERİK: Grafik + Canlı Chat Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-      
-      <!-- Sol / Orta: TradingView Canlı Grafik -->
       <div class="lg:col-span-2 bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col h-[550px]">
         <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center justify-between">
           <span id="chart-title">📈 TradingView Canlı BTC/USDT Grafiği</span>
@@ -94,17 +91,14 @@
         <div class="w-full flex-1 rounded-lg overflow-hidden border border-slate-700/50" id="tradingview_chart"></div>
       </div>
 
-      <!-- Sağ: Canlı Chat / Yorum Alanı -->
       <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col h-[550px]">
         <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center justify-between border-b border-slate-700/50 pb-2">
           <span>💬 Piyasa Chat & Yorumlar</span>
           <span class="text-[10px] text-slate-400 font-normal">Canlı Akış</span>
         </h2>
 
-        <!-- Mesaj Akış Alanı -->
         <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs"></div>
 
-        <!-- Yorum Gönderme Formu -->
         <form onsubmit="sendMessage(event)" class="mt-4 border-t border-slate-700/50 pt-3 flex flex-col gap-2">
           <input type="text" id="username" placeholder="Rumuz (Opsiyonel)" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-500">
           <div class="flex gap-2">
@@ -115,16 +109,13 @@
           </div>
         </form>
       </div>
-
     </div>
 
-    <!-- Footer -->
     <footer class="mt-8 text-center text-xs text-slate-500">
       ⚠️ Sitede yer alan analizler, grafikler ve kullanıcı yorumları kesinlikle yatırım tavsiyesi (YTD) değildir.
     </footer>
   </div>
 
-  <!-- TradingView Widget Script -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   
   <script>
@@ -181,16 +172,19 @@
     async function fetchPrice() {
       try {
         const res = await fetch(`/api/price/${currentCoin}`);
+        if (!res.ok) throw new Error('API Hatası');
         const data = await res.json();
         
-        document.getElementById('coin-price').innerText = `$${data.price}`;
-        const changeEl = document.getElementById('coin-change');
-        changeEl.innerText = `${data.changePercent}%`;
+        if (data.price) {
+          document.getElementById('coin-price').innerText = `$${data.price}`;
+          const changeEl = document.getElementById('coin-change');
+          changeEl.innerText = `${data.changePercent}%`;
 
-        if (parseFloat(data.changePercent) >= 0) {
-          changeEl.className = 'text-sm font-bold text-emerald-400';
-        } else {
-          changeEl.className = 'text-sm font-bold text-rose-400';
+          if (parseFloat(data.changePercent) >= 0) {
+            changeEl.className = 'text-sm font-bold text-emerald-400';
+          } else {
+            changeEl.className = 'text-sm font-bold text-rose-400';
+          }
         }
       } catch (err) {
         console.error('Fiyat hatası:', err);
@@ -206,10 +200,10 @@
         const res = await fetch(`/api/analyze/${currentCoin}`);
         const data = await res.json();
 
-        document.getElementById('alim-bolgesi').innerText = data.alim_bolgesi;
-        document.getElementById('satim-bolgesi').innerText = data.satim_bolgesi;
-        document.getElementById('trend-yonu').innerText = data.trend_yonu;
-        document.getElementById('ozet-yorum').innerText = data.ozet_yorum;
+        document.getElementById('alim-bolgesi').innerText = data.alim_bolgesi || '-';
+        document.getElementById('satim-bolgesi').innerText = data.satim_bolgesi || '-';
+        document.getElementById('trend-yonu').innerText = data.trend_yonu || '-';
+        document.getElementById('ozet-yorum').innerText = data.ozet_yorum || '-';
         
         fetchChat();
       } catch (err) {

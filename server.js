@@ -13,7 +13,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Canlı Chat Mesajları
 let chatMessages = [
   {
     user: 'Crypto_Bot 🤖',
@@ -23,7 +22,6 @@ let chatMessages = [
   }
 ];
 
-// SUI Eklenmiş Popüler Coin Listesi
 const SUPPORTED_COINS = {
   'BTC': { symbol: 'BTCUSDT', name: 'Bitcoin' },
   'ETH': { symbol: 'ETHUSDT', name: 'Ethereum' },
@@ -38,7 +36,7 @@ const SUPPORTED_COINS = {
   'PEPE': { symbol: 'PEPEUSDT', name: 'Pepe' }
 };
 
-// 1. Canlı Fiyat Verisi Endpoint'i
+// 1. Canlı Fiyat Endpoint'i
 app.get('/api/price/:coin', async (req, res) => {
   try {
     const coinKey = (req.params.coin || 'BTC').toUpperCase();
@@ -46,17 +44,22 @@ app.get('/api/price/:coin', async (req, res) => {
 
     const response = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinInfo.symbol}`);
     const data = response.data;
+
+    const rawPrice = parseFloat(data.lastPrice);
+    const formattedPrice = rawPrice < 1 ? rawPrice.toFixed(6) : rawPrice.toFixed(2);
+    const formattedChange = parseFloat(data.priceChangePercent).toFixed(2);
     
     res.json({
       coin: coinKey,
       name: coinInfo.name,
-      price: parseFloat(data.lastPrice) < 1 ? parseFloat(data.lastPrice).toFixed(6) : parseFloat(data.lastPrice).toFixed(2),
-      changePercent: parseFloat(data.priceChangePercent).toFixed(2),
+      price: formattedPrice,
+      changePercent: formattedChange,
       high: parseFloat(data.highPrice).toFixed(2),
       low: parseFloat(data.lowPrice).toFixed(2),
       volume: parseFloat(data.volume).toFixed(2)
     });
   } catch (error) {
+    console.error('Fiyat Çekme Hatası:', error.message);
     res.status(500).json({ error: 'Fiyat verisi çekilemedi.' });
   }
 });
@@ -75,13 +78,11 @@ Sen kıdemli bir kripto para teknik analistisisin.
 Şu anki ${coinInfo.name} (${coinKey}/USDT) piyasa verileri:
 - Anlık Fiyat: $${parseFloat(coinData.lastPrice)}
 - 24s Değişim: %${parseFloat(coinData.priceChangePercent).toFixed(2)}
-- 24s En Yüksek: $${parseFloat(coinData.highPrice)}
-- 24s En Düşük: $${parseFloat(coinData.lowPrice)}
 
-Lütfen yanıtını SADECE geçerli bir JSON formatında döndür:
+Lütfen yanıtını SADECE geçerli bir JSON formatında döndür (başka metin ekleme):
 {
-  "alim_bolgesi": "Örn: Destek ve alım aralığı",
-  "satim_bolgesi": "Örn: Direnç ve satım aralığı",
+  "alim_bolgesi": "Destek ve alım aralığı",
+  "satim_bolgesi": "Direnç ve satım aralığı",
   "trend_yonu": "Yükseliş / Düşüş / Yatay",
   "ozet_yorum": "${coinInfo.name} piyasa koşullarına dair 2-3 cümlelik profesyonel Türkçe analiz."
 }
@@ -110,12 +111,12 @@ Lütfen yanıtını SADECE geçerli bir JSON formatında döndür:
   }
 });
 
-// 3. Chat Mesajlarını Getir
+// 3. Chat Mesajları
 app.get('/api/chat', (req, res) => {
   res.json(chatMessages);
 });
 
-// 4. Yeni Kullanıcı Yorumu Ekle
+// 4. Chat Mesaj Gönder
 app.post('/api/chat', (req, res) => {
   const { user, text } = req.body;
   if (!text || text.trim() === '') {
