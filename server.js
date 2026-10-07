@@ -22,44 +22,65 @@ let chatMessages = [
   }
 ];
 
+// Coin Tanımları ve CoinGecko ID Eşleşmeleri
 const SUPPORTED_COINS = {
-  'BTC': { symbol: 'BTCUSDT', name: 'Bitcoin' },
-  'ETH': { symbol: 'ETHUSDT', name: 'Ethereum' },
-  'SOL': { symbol: 'SOLUSDT', name: 'Solana' },
-  'SUI': { symbol: 'SUIUSDT', name: 'Sui' },
-  'BNB': { symbol: 'BNBUSDT', name: 'BNB' },
-  'XRP': { symbol: 'XRPUSDT', name: 'Ripple' },
-  'DOGE': { symbol: 'DOGEUSDT', name: 'Dogecoin' },
-  'ADA': { symbol: 'ADAUSDT', name: 'Cardano' },
-  'AVAX': { symbol: 'AVAXUSDT', name: 'Avalanche' },
-  'LINK': { symbol: 'LINKUSDT', name: 'Chainlink' },
-  'PEPE': { symbol: 'PEPEUSDT', name: 'Pepe' }
+  'BTC': { symbol: 'BTCUSDT', geckoId: 'bitcoin', name: 'Bitcoin' },
+  'ETH': { symbol: 'ETHUSDT', geckoId: 'ethereum', name: 'Ethereum' },
+  'SOL': { symbol: 'SOLUSDT', geckoId: 'solana', name: 'Solana' },
+  'SUI': { symbol: 'SUIUSDT', geckoId: 'sui', name: 'Sui' },
+  'BNB': { symbol: 'BNBUSDT', geckoId: 'binancecoin', name: 'BNB' },
+  'XRP': { symbol: 'XRPUSDT', geckoId: 'ripple', name: 'Ripple' },
+  'DOGE': { symbol: 'DOGEUSDT', geckoId: 'dogecoin', name: 'Dogecoin' },
+  'ADA': { symbol: 'ADAUSDT', geckoId: 'cardano', name: 'Cardano' },
+  'AVAX': { symbol: 'AVAXUSDT', geckoId: 'avalanche-2', name: 'Avalanche' },
+  'LINK': { symbol: 'LINKUSDT', geckoId: 'chainlink', name: 'Chainlink' },
+  'PEPE': { symbol: 'PEPEUSDT', geckoId: 'pepe', name: 'Pepe' }
 };
+
+// Fiyat Çekme Yardımcı Fonksiyonu (Binance + CoinGecko Yedekli)
+async function getCoinPriceData(coinKey) {
+  const coinInfo = SUPPORTED_COINS[coinKey] || SUPPORTED_COINS['BTC'];
+
+  // 1. Önce Binance API dene
+  try {
+    const res = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinInfo.symbol}`, { timeout: 3000 });
+    const rawPrice = parseFloat(res.data.lastPrice);
+    return {
+      coin: coinKey,
+      name: coinInfo.name,
+      price: rawPrice < 1 ? rawPrice.toFixed(6) : rawPrice.toFixed(2),
+      changePercent: parseFloat(res.data.priceChangePercent).toFixed(2),
+      rawPrice: rawPrice
+    };
+  } catch (bErr) {
+    console.log(`Binance ${coinKey} çekilemedi, CoinGecko deneniyor...`);
+  }
+
+  // 2. Binance Başarısız Olursa CoinGecko API'den Çek
+  try {
+    const geckoRes = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coinInfo.geckoId}&vs_currencies=usd&include_24hr_change=true`, { timeout: 4000 });
+    const data = geckoRes.data[coinInfo.geckoId];
+    const rawPrice = data.usd;
+    return {
+      coin: coinKey,
+      name: coinInfo.name,
+      price: rawPrice < 1 ? rawPrice.toFixed(6) : rawPrice.toFixed(2),
+      changePercent: parseFloat(data.usd_24h_change || 0).toFixed(2),
+      rawPrice: rawPrice
+    };
+  } catch (gErr) {
+    console.error(`CoinGecko hatası:`, gErr.message);
+    throw new Error('Fiyat servislerine ulaşılamadı');
+  }
+}
 
 // 1. Canlı Fiyat Endpoint'i
 app.get('/api/price/:coin', async (req, res) => {
   try {
     const coinKey = (req.params.coin || 'BTC').toUpperCase();
-    const coinInfo = SUPPORTED_COINS[coinKey] || SUPPORTED_COINS['BTC'];
-
-    const response = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinInfo.symbol}`);
-    const data = response.data;
-
-    const rawPrice = parseFloat(data.lastPrice);
-    const formattedPrice = rawPrice < 1 ? rawPrice.toFixed(6) : rawPrice.toFixed(2);
-    const formattedChange = parseFloat(data.priceChangePercent).toFixed(2);
-    
-    res.json({
-      coin: coinKey,
-      name: coinInfo.name,
-      price: formattedPrice,
-      changePercent: formattedChange,
-      high: parseFloat(data.highPrice).toFixed(2),
-      low: parseFloat(data.lowPrice).toFixed(2),
-      volume: parseFloat(data.volume).toFixed(2)
-    });
+    const data = await getCoinPriceData(coinKey);
+    res.json(data);
   } catch (error) {
-    console.error('Fiyat Çekme Hatası:', error.message);
     res.status(500).json({ error: 'Fiyat verisi çekilemedi.' });
   }
 });
@@ -68,23 +89,20 @@ app.get('/api/price/:coin', async (req, res) => {
 app.get('/api/analyze/:coin', async (req, res) => {
   try {
     const coinKey = (req.params.coin || 'BTC').toUpperCase();
-    const coinInfo = SUPPORTED_COINS[coinKey] || SUPPORTED_COINS['BTC'];
-
-    const btcRes = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${coinInfo.symbol}`);
-    const coinData = btcRes.data;
+    const coinData = await getCoinPriceData(coinKey);
 
     const prompt = `
 Sen kıdemli bir kripto para teknik analistisisin. 
-Şu anki ${coinInfo.name} (${coinKey}/USDT) piyasa verileri:
-- Anlık Fiyat: $${parseFloat(coinData.lastPrice)}
-- 24s Değişim: %${parseFloat(coinData.priceChangePercent).toFixed(2)}
+Şu anki ${coinData.name} (${coinKey}/USDT) piyasa verileri:
+- Anlık Fiyat: $${coinData.price}
+- 24s Değişim: %${coinData.changePercent}
 
-Lütfen yanıtını SADECE geçerli bir JSON formatında döndür (başka metin ekleme):
+Lütfen yanıtını SADECE geçerli bir JSON formatında döndür:
 {
-  "alim_bolgesi": "Destek ve alım aralığı",
-  "satim_bolgesi": "Direnç ve satım aralığı",
+  "alim_bolgesi": "Örn: Destek ve alım aralığı",
+  "satim_bolgesi": "Örn: Direnç ve satım aralığı",
   "trend_yonu": "Yükseliş / Düşüş / Yatay",
-  "ozet_yorum": "${coinInfo.name} piyasa koşullarına dair 2-3 cümlelik profesyonel Türkçe analiz."
+  "ozet_yorum": "${coinData.name} piyasa koşullarına dair 2-3 cümlelik profesyonel Türkçe analiz."
 }
 `;
 
