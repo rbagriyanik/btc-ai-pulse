@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto AI Pulse - Çoklu Coin Analiz Platformu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen font-sans">
+
+  <div class="max-w-7xl mx-auto p-4 md:p-6">
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-800">
+      <div>
+        <h1 class="text-2xl font-bold text-amber-500 flex items-center gap-2">
+          ⚡ Crypto AI Pulse
+        </h1>
+        <p class="text-xs text-slate-400">TradingView Grafiği ve Canlı Yapay Zeka Analizi</p>
+      </div>
+
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <!-- Coin Seçim Menüsü -->
+        <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg">
+          <label for="coin-select" class="text-xs text-slate-400 font-semibold">Coin:</label>
+          <select id="coin-select" onchange="changeCoin()" class="bg-slate-900 text-amber-400 font-bold text-sm rounded px-2 py-1 focus:outline-none border border-slate-700 cursor-pointer">
+            <option value="BTC">Bitcoin (BTC)</option>
+            <option value="ETH">Ethereum (ETH)</option>
+            <option value="SOL">Solana (SOL)</option>
+            <option value="SUI">Sui (SUI)</option>
+            <option value="BNB">BNB (BNB)</option>
+            <option value="XRP">Ripple (XRP)</option>
+            <option value="DOGE">Dogecoin (DOGE)</option>
+            <option value="ADA">Cardano (ADA)</option>
+            <option value="AVAX">Avalanche (AVAX)</option>
+            <option value="LINK">Chainlink (LINK)</option>
+            <option value="PEPE">Pepe (PEPE)</option>
+          </select>
+        </div>
+
+        <span class="text-xs px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Canlı
+        </span>
+      </div>
+    </header>
+
+    <!-- Fiyat ve AI Bölgesi Üst Kartlar -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+      <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col justify-center">
+        <span id="coin-name-label" class="text-xs text-slate-400">Bitcoin (BTC/USDT)</span>
+        <div id="coin-price" class="text-3xl font-extrabold tracking-tight mt-1 text-white">$0.00</div>
+        <div id="coin-change" class="text-sm font-bold mt-1">0.00%</div>
+      </div>
+
+      <div class="bg-emerald-950/20 border border-emerald-500/30 p-4 rounded-xl">
+        <span class="text-xs text-emerald-400 font-semibold">Olası Alım Bölgesi</span>
+        <div id="alim-bolgesi" class="text-lg font-bold text-emerald-300 mt-1">Analiz Bekleniyor...</div>
+      </div>
+
+      <div class="bg-rose-950/20 border border-rose-500/30 p-4 rounded-xl">
+        <span class="text-xs text-rose-400 font-semibold">Olası Satım Bölgesi</span>
+        <div id="satim-bolgesi" class="text-lg font-bold text-rose-300 mt-1">Analiz Bekleniyor...</div>
+      </div>
+
+      <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col justify-between">
+        <div>
+          <span class="text-xs text-amber-400 font-semibold">Trend Yönü</span>
+          <div id="trend-yonu" class="text-lg font-bold text-slate-200 mt-1">-</div>
+        </div>
+        <button id="analyze-btn" onclick="fetchAIAnalysis()" class="w-full mt-2 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg transition text-xs">
+          AI Analizini Yenile
+        </button>
+      </div>
+    </div>
+
+    <!-- AI Detaylı Yorum Kartı -->
+    <div class="mt-4 bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+      <div class="text-xs text-slate-400 font-semibold mb-1 flex items-center gap-1">
+        🤖 Yapay Zeka Detaylı Analiz Notu
+      </div>
+      <p id="ozet-yorum" class="text-sm text-slate-300 leading-relaxed">
+        Yukarıdaki "AI Analizini Yenile" butonuna tıklayarak seçili coine özel güncel piyasa değerlendirmesini alabilirsiniz.
+      </p>
+    </div>
+
+    <!-- ANA İÇERİK: Grafik + Canlı Chat Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      
+      <!-- Sol / Orta: TradingView Canlı Grafik -->
+      <div class="lg:col-span-2 bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col h-[550px]">
+        <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center justify-between">
+          <span id="chart-title">📈 TradingView Canlı BTC/USDT Grafiği</span>
+        </h2>
+        <div class="w-full flex-1 rounded-lg overflow-hidden border border-slate-700/50" id="tradingview_chart"></div>
+      </div>
+
+      <!-- Sağ: Canlı Chat / Yorum Alanı -->
+      <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col h-[550px]">
+        <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center justify-between border-b border-slate-700/50 pb-2">
+          <span>💬 Piyasa Chat & Yorumlar</span>
+          <span class="text-[10px] text-slate-400 font-normal">Canlı Akış</span>
+        </h2>
+
+        <!-- Mesaj Akış Alanı -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs"></div>
+
+        <!-- Yorum Gönderme Formu -->
+        <form onsubmit="sendMessage(event)" class="mt-4 border-t border-slate-700/50 pt-3 flex flex-col gap-2">
+          <input type="text" id="username" placeholder="Rumuz (Opsiyonel)" class="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          <div class="flex gap-2">
+            <input type="text" id="message-text" placeholder="Yorumunuzu yazın..." required class="flex-1 bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+            <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 font-bold rounded text-xs transition">
+              Gönder
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-xs text-slate-500">
+      ⚠️ Sitede yer alan analizler, grafikler ve kullanıcı yorumları kesinlikle yatırım tavsiyesi (YTD) değildir.
+    </footer>
+  </div>
+
+  <!-- TradingView Widget Script -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  
+  <script>
+    let currentCoin = 'BTC';
+    let tvWidget = null;
+
+    const coinNames = { 
+      'BTC': 'Bitcoin', 
+      'ETH': 'Ethereum', 
+      'SOL': 'Solana', 
+      'SUI': 'Sui',
+      'BNB': 'BNB',
+      'XRP': 'Ripple',
+      'DOGE': 'Dogecoin',
+      'ADA': 'Cardano',
+      'AVAX': 'Avalanche',
+      'LINK': 'Chainlink',
+      'PEPE': 'Pepe'
+    };
+
+    function loadTradingView(symbol) {
+      document.getElementById('tradingview_chart').innerHTML = '';
+      
+      tvWidget = new TradingView.widget({
+        "autosize": true,
+        "symbol": `BINANCE:${symbol}USDT`,
+        "interval": "60",
+        "timezone": "Europe/Istanbul",
+        "theme": "dark",
+        "style": "1",
+        "locale": "tr",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "allow_symbol_change": false,
+        "container_id": "tradingview_chart"
+      });
+    }
+
+    function changeCoin() {
+      currentCoin = document.getElementById('coin-select').value;
+      
+      document.getElementById('coin-name-label').innerText = `${coinNames[currentCoin]} (${currentCoin}/USDT)`;
+      document.getElementById('chart-title').innerText = `📈 TradingView Canlı ${currentCoin}/USDT Grafiği`;
+
+      document.getElementById('alim-bolgesi').innerText = 'Analiz Bekleniyor...';
+      document.getElementById('satim-bolgesi').innerText = 'Analiz Bekleniyor...';
+      document.getElementById('trend-yonu').innerText = '-';
+      document.getElementById('ozet-yorum').innerText = `${coinNames[currentCoin]} için yapay zeka analizini yenileyebilirsiniz.`;
+
+      loadTradingView(currentCoin);
+      fetchPrice();
+    }
+
+    async function fetchPrice() {
+      try {
+        const res = await fetch(`/api/price/${currentCoin}`);
+        const data = await res.json();
+        
+        document.getElementById('coin-price').innerText = `$${data.price}`;
+        const changeEl = document.getElementById('coin-change');
+        changeEl.innerText = `${data.changePercent}%`;
+
+        if (parseFloat(data.changePercent) >= 0) {
+          changeEl.className = 'text-sm font-bold text-emerald-400';
+        } else {
+          changeEl.className = 'text-sm font-bold text-rose-400';
+        }
+      } catch (err) {
+        console.error('Fiyat hatası:', err);
+      }
+    }
+
+    async function fetchAIAnalysis() {
+      const btn = document.getElementById('analyze-btn');
+      btn.innerText = 'Analiz Ediliyor...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/analyze/${currentCoin}`);
+        const data = await res.json();
+
+        document.getElementById('alim-bolgesi').innerText = data.alim_bolgesi;
+        document.getElementById('satim-bolgesi').innerText = data.satim_bolgesi;
+        document.getElementById('trend-yonu').innerText = data.trend_yonu;
+        document.getElementById('ozet-yorum').innerText = data.ozet_yorum;
+        
+        fetchChat();
+      } catch (err) {
+        alert('AI Analizi alınırken bir hata oluştu.');
+      } finally {
+        btn.innerText = 'AI Analizini Yenile';
+        btn.disabled = false;
+      }
+    }
+
+    async function fetchChat() {
+      try {
+        const res = await fetch('/api/chat');
+        const messages = await res.json();
+        
+        const container = document.getElementById('chat-messages');
+        container.innerHTML = messages.map(msg => `
+          <div class="p-2.5 rounded-lg ${msg.isAi ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-slate-900/80 border border-slate-700/50'}">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold ${msg.isAi ? 'text-amber-400' : 'text-slate-300'}">${msg.user}</span>
+              <span class="text-[10px] text-slate-500">${msg.time}</span>
+            </div>
+            <p class="text-slate-300">${msg.text}</p>
+          </div>
+        `).join('');
+
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        console.error('Chat hatası:', err);
+      }
+    }
+
+    async function sendMessage(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById('username');
+      const messageInput = document.getElementById('message-text');
+
+      const user = usernameInput.value;
+      const text = messageInput.value;
+
+      try {
+        await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, text })
+        });
+
+        messageInput.value = '';
+        fetchChat();
+      } catch (err) {
+        alert('Mesaj gönderilemedi.');
+      }
+    }
+
+    loadTradingView('BTC');
+    fetchPrice();
+    fetchChat();
+
+    setInterval(fetchPrice, 5000);
+    setInterval(fetchChat, 3000);
+  </script>
+</body>
+</html>
