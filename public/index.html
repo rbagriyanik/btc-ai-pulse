@@ -47,7 +47,7 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
       <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col justify-center">
         <span id="coin-name-label" class="text-xs text-slate-400">Bitcoin (BTC/USDT)</span>
-        <div id="coin-price" class="text-3xl font-extrabold tracking-tight mt-1 text-white">$0.00</div>
+        <div id="coin-price" class="text-3xl font-extrabold tracking-tight mt-1 text-white">Yükleniyor...</div>
         <div id="coin-change" class="text-sm font-bold mt-1">0.00%</div>
       </div>
 
@@ -169,25 +169,54 @@
       fetchPrice();
     }
 
+    // Doğrudan İstemci (Tarayıcı) Üzerinden Binance Verisi Çekme (Engellere Takılmaz)
     async function fetchPrice() {
       try {
-        const res = await fetch(`/api/price/${currentCoin}`);
-        if (!res.ok) throw new Error('API Hatası');
-        const data = await res.json();
+        const symbol = `${currentCoin}USDT`;
+        const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
         
-        if (data.price) {
-          document.getElementById('coin-price').innerText = `$${data.price}`;
-          const changeEl = document.getElementById('coin-change');
-          changeEl.innerText = `${data.changePercent}%`;
+        if (!res.ok) throw new Error('Binance yanıt vermedi');
+        const data = await res.json();
 
-          if (parseFloat(data.changePercent) >= 0) {
-            changeEl.className = 'text-sm font-bold text-emerald-400';
-          } else {
-            changeEl.className = 'text-sm font-bold text-rose-400';
-          }
+        const rawPrice = parseFloat(data.lastPrice);
+        const formattedPrice = rawPrice < 1 ? rawPrice.toFixed(6) : rawPrice.toFixed(2);
+        const changePercent = parseFloat(data.priceChangePercent).toFixed(2);
+
+        document.getElementById('coin-price').innerText = `$${formattedPrice}`;
+        const changeEl = document.getElementById('coin-change');
+        changeEl.innerText = `${changePercent}%`;
+
+        if (parseFloat(changePercent) >= 0) {
+          changeEl.className = 'text-sm font-bold text-emerald-400';
+        } else {
+          changeEl.className = 'text-sm font-bold text-rose-400';
         }
       } catch (err) {
-        console.error('Fiyat hatası:', err);
+        // Binance isteği engellenirse yedek olarak CoinGecko dener
+        fetchPriceBackup();
+      }
+    }
+
+    async function fetchPriceBackup() {
+      try {
+        const geckoIds = {
+          'BTC': 'bitcoin', 'ETH': 'ethereum', 'SOL': 'solana', 'SUI': 'sui',
+          'BNB': 'binancecoin', 'XRP': 'ripple', 'DOGE': 'dogecoin',
+          'ADA': 'cardano', 'AVAX': 'avalanche-2', 'LINK': 'chainlink', 'PEPE': 'pepe'
+        };
+        const id = geckoIds[currentCoin] || 'bitcoin';
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true`);
+        const data = await res.json();
+
+        const rawPrice = data[id].usd;
+        const formattedPrice = rawPrice < 1 ? rawPrice.toFixed(6) : rawPrice.toFixed(2);
+        const changePercent = parseFloat(data[id].usd_24h_change || 0).toFixed(2);
+
+        document.getElementById('coin-price').innerText = `$${formattedPrice}`;
+        const changeEl = document.getElementById('coin-change');
+        changeEl.innerText = `${changePercent}%`;
+      } catch (e) {
+        console.error('Yedek fiyat çekme hatası:', e);
       }
     }
 
@@ -262,7 +291,7 @@
     fetchPrice();
     fetchChat();
 
-    setInterval(fetchPrice, 5000);
+    setInterval(fetchPrice, 3000);
     setInterval(fetchChat, 3000);
   </script>
 </body>
