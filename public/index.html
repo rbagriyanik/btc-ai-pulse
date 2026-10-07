@@ -169,7 +169,6 @@
       fetchPrice();
     }
 
-    // Doğrudan İstemci (Tarayıcı) Üzerinden Binance Verisi Çekme (Engellere Takılmaz)
     async function fetchPrice() {
       try {
         const symbol = `${currentCoin}USDT`;
@@ -192,7 +191,6 @@
           changeEl.className = 'text-sm font-bold text-rose-400';
         }
       } catch (err) {
-        // Binance isteği engellenirse yedek olarak CoinGecko dener
         fetchPriceBackup();
       }
     }
@@ -225,8 +223,23 @@
       btn.innerText = 'Analiz Ediliyor...';
       btn.disabled = true;
 
+      const priceText = document.getElementById('coin-price').innerText.replace('$', '');
+      const changeText = document.getElementById('coin-change').innerText.replace('%', '');
+
       try {
-        const res = await fetch(`/api/analyze/${currentCoin}`);
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            coinKey: currentCoin,
+            coinName: coinNames[currentCoin],
+            price: priceText,
+            changePercent: changeText
+          })
+        });
+
+        if (!res.ok) throw new Error('Analiz alınamadı');
+
         const data = await res.json();
 
         document.getElementById('alim-bolgesi').innerText = data.alim_bolgesi || '-';
@@ -236,7 +249,7 @@
         
         fetchChat();
       } catch (err) {
-        alert('AI Analizi alınırken bir hata oluştu.');
+        alert('AI Analizi alınırken bir hata oluştu. Lütfen tekrar deneyin.');
       } finally {
         btn.innerText = 'AI Analizini Yenile';
         btn.disabled = false;
