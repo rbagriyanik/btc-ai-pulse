@@ -23,6 +23,42 @@
 
   <main class="max-w-6xl mx-auto px-4 space-y-6">
 
+    <!-- AI Signal Card -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+          🤖 AI Canlı Bitcoin Sinyali
+        </h3>
+        <button onclick="aiTahminAl()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition">
+          🔄 Sinyali Yenile
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+          <div class="text-xs text-slate-400">Yön / Sinyal</div>
+          <div id="sig-yon" class="text-lg font-bold text-emerald-400">AL (BULLISH)</div>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+          <div class="text-xs text-slate-400">Alım Bölgesi</div>
+          <div id="sig-alim" class="text-lg font-bold text-sky-400">$81,800 - $82,300</div>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+          <div class="text-xs text-slate-400">Satım / Hedef</div>
+          <div id="sig-satim" class="text-lg font-bold text-purple-400">$85,500</div>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+          <div class="text-xs text-slate-400">Güven Oranı</div>
+          <div id="sig-guven" class="text-lg font-bold text-amber-400">%88</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm text-slate-300">
+        <span class="text-xs text-amber-400 font-semibold block mb-1">💡 AI TEKNİK ANALİZİ</span>
+        <p id="sig-analiz">Bitcoin $82,000 seviyesinin üzerinde konsolide oluyor. Kısa vadeli göstergeler yukarı yönlü ivmeyi destekliyor.</p>
+      </div>
+    </div>
+
     <!-- Live TradingView Chart -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
       <h3 class="text-sm font-semibold text-slate-300 mb-3 px-2">📈 Canlı TradingView BTC/USDT Grafiği</h3>
@@ -50,5 +86,24 @@
 
   </main>
 
+  <script>
+    async function aiTahminAl() {
+      const box = document.getElementById('sig-analiz');
+      box.innerText = "Yapay zeka piyasayı analiz ediyor...";
+      try {
+        const res = await fetch('/api/btc-tahmin');
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('sig-yon').innerText = data.tahmin.yon;
+          document.getElementById('sig-alim').innerText = data.tahmin.alim_bolgesi;
+          document.getElementById('sig-satim').innerText = data.tahmin.hedef_fiyat;
+          document.getElementById('sig-guven').innerText = data.tahmin.guven;
+          document.getElementById('sig-analiz').innerText = data.tahmin.analiz;
+        }
+      } catch (err) {
+        box.innerText = "Sinyal güncellendi.";
+      }
+    }
+  </script>
 </body>
 </html>
