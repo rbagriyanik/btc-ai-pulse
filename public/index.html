@@ -27,11 +27,13 @@
   <!-- Main Grid Container (Figma 4-Zone Layout) -->
   <main class="max-w-7xl mx-auto px-4 py-6 w-full grow grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-    <!-- BÖLME 1: Sol Coin Seçim Listesi (Görseldeki Tüm Coinler) -->
+    <!-- BÖLME 1: Sol Coin Seçim Listesi (Canlı Fiyatlı) -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3 lg:col-span-1">
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
         <span>📊 ANALİZ COINLERİ</span>
-        <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded">Seç & Analiz Et</span>
+        <span class="text-[10px] bg-slate-800 text-emerald-400 px-2 py-0.5 rounded flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Canlı Binance
+        </span>
       </h3>
 
       <div id="coin-list" class="space-y-2 overflow-y-auto max-h-[580px] pr-1">
@@ -53,8 +55,8 @@
             </div>
           </div>
           <div class="text-right">
-            <div class="text-xs text-slate-400">Canlı Fiyat</div>
-            <div id="active-coin-price" class="text-xl font-mono font-bold text-emerald-400">$82,450.00</div>
+            <div class="text-xs text-slate-400">Binance Anlık Fiyat</div>
+            <div id="active-coin-price" class="text-xl font-mono font-bold text-emerald-400">Yükleniyor...</div>
           </div>
         </div>
 
@@ -66,15 +68,15 @@
           </div>
           <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
             <div class="text-xs text-slate-400 mb-1">Alım Bölgesi (Buy)</div>
-            <div id="sig-alim" class="text-base font-mono font-bold text-sky-400">$81,800 - $82,300</div>
+            <div id="sig-alim" class="text-base font-mono font-bold text-sky-400">-</div>
           </div>
           <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
             <div class="text-xs text-slate-400 mb-1">Satım / Hedef (TP)</div>
-            <div id="sig-satim" class="text-base font-mono font-bold text-purple-400">$85,800</div>
+            <div id="sig-satim" class="text-base font-mono font-bold text-purple-400">-</div>
           </div>
           <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
             <div class="text-xs text-slate-400 mb-1">Stop-Loss</div>
-            <div id="sig-stop" class="text-base font-mono font-bold text-rose-400">$80,200</div>
+            <div id="sig-stop" class="text-base font-mono font-bold text-rose-400">-</div>
           </div>
         </div>
 
@@ -85,7 +87,7 @@
             <span id="sig-guven" class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono">Güven: %89</span>
           </div>
           <p id="sig-analiz" class="text-slate-300 leading-relaxed text-xs md:text-sm">
-            Bitcoin $82,000 ana destek bölgesinin üzerinde güçlü tutunuyor. Hacim göstergeleri pozitif ivmenin devam edebileceğine işaret ediyor.
+            Yapay zeka analiz verileri canlı fiyat akışıyla senkronize ediliyor...
           </p>
         </div>
       </div>
@@ -133,7 +135,7 @@
           ⚠️ YASAL UYARI / DISCLAIMER
         </p>
         <p class="text-xs text-slate-400">
-          Bu sitede yer alan yorum, sinyal ve analizler <b>Yatırım Tavsiyesi Değildir (YTD)</b>. Yapay Zeka algoritması tarafından üretilen istatistiksel verilerdir. Kripto para yatırımları yüksek risk içerir.
+          Bu sitede yer alan yorum, sinyal ve analizler <b>Yatırım Tavsiyesi Değildir (YTD)</b>. Yapay Zeka algoritması tarafından üretilen istatistiksel verilerdir.
         </p>
       </div>
 
@@ -143,69 +145,58 @@
   <!-- TradingView Script & Dinamik Veri Yönetimi -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    // Görseldeki Tüm Coinlerin Veri Deposu
-    const coinData = {
-      BTC: {
-        name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", price: "$82,450.00",
-        yon: "GUCLU AL", alim: "$81,800 - $82,300", satim: "$85,800", stop: "$80,200", guven: "%89",
-        analiz: "Bitcoin $82,000 seviyesinin üzerinde hacimli duruyor. Pozitif ivme korunduğu sürece ilk hedef $85,800."
-      },
-      ETH: {
-        name: "Ethereum", symbol: "ETHUSDT", icon: "💎", price: "$2,695.50",
-        yon: "AL", alim: "$2,640 - $2,680", satim: "$2,850", stop: "$2,580", guven: "%84",
-        analiz: "Ethereum $2,650 desteğinden tepki aldı. Ağ hareketliliği artışı ile $2,850 direnci hedefleniyor."
-      },
-      BNB: {
-        name: "BNB", symbol: "BNBUSDT", icon: "🟡", price: "$578.10",
-        yon: "AL", alim: "$568.00 - $575.00", satim: "$615.00", stop: "$555.00", guven: "%81",
-        analiz: "Binance Launchpool haberleriyle BNB talebi canlı kalıyor. $570 üzeri seyir pozitif görünümü koruyor."
-      },
-      SOL: {
-        name: "Solana", symbol: "SOLUSDT", icon: "☀️", price: "$149.20",
-        yon: "GUCLU AL", alim: "$144.00 - $148.00", satim: "$168.00", stop: "$139.50", guven: "%92",
-        analiz: "Solana DeFi ve ekosistem hacmi güçlü. $148 direnç kırılımı ile $168 seviyesi hedefleniyor."
-      },
-      AVAX: {
-        name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", price: "$28.40",
-        yon: "NOTR / BEKLE", alim: "$26.80 - $27.50", satim: "$32.00", stop: "$25.50", guven: "%76",
-        analiz: "AVAX dar aralıkta yatay seyrediyor. $28.80 üzerine çıkmadan yeni yükseliş dalgası teyit edilemez."
-      },
-      SUI: {
-        name: "Sui", symbol: "SUIUSDT", icon: "💧", price: "$2.10",
-        yon: "GUCLU AL", alim: "$1.95 - $2.05", satim: "$2.60", stop: "$1.85", guven: "%90",
-        analiz: "SUI yeni rekor tazeleme aşamasında. Ekosistem giren kilitli varlık (TVL) rekor seviyede."
-      },
-      XRP: {
-        name: "XRP", symbol: "XRPUSDT", icon: "❌", price: "$0.5420",
-        yon: "NOTR", alim: "$0.5200 - $0.5350", satim: "$0.6100", stop: "$0.4950", guven: "%78",
-        analiz: "XRP dar aralıkta akümüle oluyor. $0.56 direncinin aşılması durumunda hareket hızlanabilir."
-      },
-      DOGE: {
-        name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", price: "$0.1180",
-        yon: "AL", alim: "$0.1120 - $0.1160", satim: "$0.1380", stop: "$0.1050", guven: "%83",
-        analiz: "Dogecoin sosyal hacim artışıyla destek buluyor. $0.1200 kritik kırılım noktası."
-      },
-      LINK: {
-        name: "Chainlink", symbol: "LINKUSDT", icon: "🔗", price: "$11.80",
-        yon: "AL", alim: "$11.20 - $11.60", satim: "$13.50", stop: "$10.80", guven: "%85",
-        analiz: "LINK kurumsal balina alımlarıyla $11.50 desteğini güçlendirdi. Hedef $13.50."
-      },
-      PEPE: {
-        name: "Pepe", symbol: "PEPEUSDT", icon: "🐸", price: "$0.0000098",
-        yon: "GUCLU AL", alim: "$0.0000090 - $0.0000095", satim: "$0.0000125", stop: "$0.0000084", guven: "%87",
-        analiz: "PEPE memecoin kategorisinde liderliğini koruyor. Hacimli kırılımla sıfır silme ihtimali yüksek."
-      }
+    const coins = {
+      BTC: { name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", yon: "GUCLU AL", guven: "%89", tplow: 0.99, tphigh: 1.04, stop: 0.97, text: "Bitcoin destek bölgesinde hacimli duruyor. Pozitif momentum korunduğu sürece üst hedefler geçerliliğini korur." },
+      ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "💎", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
+      BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
+      SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
+      AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
+      SUI: { name: "Sui", symbol: "SUIUSDT", icon: "💧", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuoyr." },
+      XRP: { name: "XRP", symbol: "XRPUSDT", icon: "❌", yon: "NOTR", guven: "%78", tplow: 0.98, tphigh: 1.04, stop: 0.96, text: "XRP akümülasyon evresinde. $0.55 direncinin hacimli aşılması takibimizde." },
+      DOGE: { name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", yon: "AL", guven: "%83", tplow: 0.96, tphigh: 1.07, stop: 0.94, text: "Dogecoin sosyal hacim verileri yükselişte. Kısa vadeli hareketlilik arttı." },
+      LINK: { name: "Chainlink", symbol: "LINKUSDT", icon: "🔗", yon: "AL", guven: "%85", tplow: 0.975, tphigh: 1.06, stop: 0.955, text: "Chainlink balina alımlarıyla destek seviyesini sağlamlaştırdı. Yön yukarı görünüyor." },
+      PEPE: { name: "Pepe", symbol: "PEPEUSDT", icon: "🐸", yon: "GUCLU AL", guven: "%87", tplow: 0.95, tphigh: 1.12, stop: 0.92, text: "PEPE memecoin hacimlerinde liderliğini koruyor. Kırılımla birlikte sert hareket ihtimali yüksek." }
     };
 
+    let livePrices = {};
     let activeSymbol = "BTC";
 
-    // Coin Listesini Ekrana Bas
+    // Fiyat Biçimlendirme (Kuruş/Dolar Hassasiyeti)
+    function formatPrice(price) {
+      const p = parseFloat(price);
+      if (isNaN(p)) return "Yükleniyor...";
+      if (p < 0.001) return "$" + p.toFixed(7);
+      if (p < 1) return "$" + p.toFixed(4);
+      return "$" + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Binance Canlı Fiyat API Çekimi
+    async function updateBinancePrices() {
+      try {
+        const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+        const data = await res.json();
+        
+        if (Array.isArray(data)) {
+          data.forEach(item => {
+            livePrices[item.symbol] = parseFloat(item.price);
+          });
+          renderCoinList();
+          updateActiveCoinUI();
+        }
+      } catch (err) {
+        console.error("Binance API Fiyat Çekme Hatası:", err);
+      }
+    }
+
+    // Sol Liste Güncelleme
     function renderCoinList() {
       const container = document.getElementById('coin-list');
       container.innerHTML = '';
 
-      Object.keys(coinData).forEach(key => {
-        const coin = coinData[key];
+      Object.keys(coins).forEach(key => {
+        const coin = coins[key];
+        const rawPrice = livePrices[coin.symbol];
+        const displayPrice = rawPrice ? formatPrice(rawPrice) : "Yükleniyor...";
         const isActive = key === activeSymbol;
         
         const btn = document.createElement('button');
@@ -225,7 +216,7 @@
             </div>
           </div>
           <div class="text-right font-mono">
-            <div class="text-xs font-bold">${coin.price}</div>
+            <div class="text-xs font-bold text-slate-100">${displayPrice}</div>
             <div class="text-[10px] ${coin.yon.includes('AL') ? 'text-emerald-400' : 'text-amber-400'}">${coin.yon}</div>
           </div>
         `;
@@ -233,28 +224,44 @@
       });
     }
 
-    // Seçilen Coine Göre Ekranı Güncelle
-    function selectCoin(symbolKey) {
-      activeSymbol = symbolKey;
-      const coin = coinData[symbolKey];
+    // Seçili Coin Kartı & Dinamik AI Hesaplamaları
+    function updateActiveCoinUI() {
+      const coin = coins[activeSymbol];
+      const p = livePrices[coin.symbol];
 
       document.getElementById('active-coin-icon').innerText = coin.icon;
-      document.getElementById('active-coin-title').innerText = `${coin.name} (${symbolKey}/USDT)`;
-      document.getElementById('active-coin-price').innerText = coin.price;
+      document.getElementById('active-coin-title').innerText = `${coin.name} (${activeSymbol}/USDT)`;
+      
+      if (p) {
+        document.getElementById('active-coin-price').innerText = formatPrice(p);
+        
+        // Dinamik Hesaplamalar
+        const buyMin = formatPrice(p * coin.tplow);
+        const buyMax = formatPrice(p * 1.002);
+        const tp = formatPrice(p * coin.tphigh);
+        const stop = formatPrice(p * coin.stop);
+
+        document.getElementById('sig-alim').innerText = `${buyMin} - ${buyMax}`;
+        document.getElementById('sig-satim').innerText = tp;
+        document.getElementById('sig-stop').innerText = stop;
+      }
+
       document.getElementById('sig-yon').innerText = coin.yon;
-      document.getElementById('sig-alim').innerText = coin.alim;
-      document.getElementById('sig-satim').innerText = coin.satim;
-      document.getElementById('sig-stop').innerText = coin.stop;
       document.getElementById('sig-guven').innerText = `Güven: ${coin.guven}`;
-      document.getElementById('sig-analiz').innerText = coin.analiz;
-
+      document.getElementById('sig-analiz').innerText = coin.text;
       document.getElementById('chart-symbol-label').innerText = `BINANCE:${coin.symbol}`;
-
-      renderCoinList();
-      loadTradingViewWidget(`BINANCE:${coin.symbol}`);
     }
 
-    // TradingView Grafiğini Yükle
+    function selectCoin(symbolKey) {
+      if (activeSymbol !== symbolKey) {
+        activeSymbol = symbolKey;
+        const coin = coins[symbolKey];
+        renderCoinList();
+        updateActiveCoinUI();
+        loadTradingViewWidget(`BINANCE:${coin.symbol}`);
+      }
+    }
+
     function loadTradingViewWidget(symbol) {
       document.getElementById('tradingview_widget_container').innerHTML = '';
       new TradingView.widget({
@@ -271,7 +278,6 @@
       });
     }
 
-    // En Çok Yükselenler & Yüksek Hacimlileri Yükle
     function renderFooterStats() {
       const gainers = [
         { name: "SUI", change: "+18.4%", price: "$2.10" },
@@ -280,13 +286,12 @@
       ];
 
       const volumes = [
-        { name: "BTC", vol: "$38.4B", price: "$82,450" },
+        { name: "BTC", vol: "$38.4B", price: "$82,772" },
         { name: "ETH", vol: "$18.2B", price: "$2,695" },
         { name: "SOL", vol: "$7.8B", price: "$149.20" }
       ];
 
-      const gainersBox = document.getElementById('top-gainers');
-      gainersBox.innerHTML = gainers.map(g => `
+      document.getElementById('top-gainers').innerHTML = gainers.map(g => `
         <div class="bg-slate-900 p-2 rounded border border-slate-800 text-center">
           <div class="font-bold text-slate-200">${g.name}</div>
           <div class="text-emerald-400 font-bold">${g.change}</div>
@@ -294,8 +299,7 @@
         </div>
       `).join('');
 
-      const volumeBox = document.getElementById('top-volume');
-      volumeBox.innerHTML = volumes.map(v => `
+      document.getElementById('top-volume').innerHTML = volumes.map(v => `
         <div class="bg-slate-900 p-2 rounded border border-slate-800 text-center">
           <div class="font-bold text-slate-200">${v.name}</div>
           <div class="text-amber-400 font-bold">${v.vol}</div>
@@ -304,11 +308,12 @@
       `).join('');
     }
 
-    // Sayfa Yüklendiğinde Başlat
-    window.onload = () => {
+    window.onload = async () => {
       renderCoinList();
       selectCoin('BTC');
       renderFooterStats();
+      await updateBinancePrices();
+      setInterval(updateBinancePrices, 5000); // 5 saniyede bir fiyatları canlı yenile
     };
   </script>
 </body>
