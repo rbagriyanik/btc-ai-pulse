@@ -2,8 +2,11 @@
   "name": "btc-ai-pulse",
   "version": "1.0.0",
   "description": "Crypto AI Analysis Platform",
-  "main": "public/index.html",
+  "main": "server.js",
   "scripts": {
-    "start": "echo 'Static Site Ready'"
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
   }
 }
