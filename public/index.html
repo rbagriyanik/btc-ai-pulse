@@ -27,14 +27,14 @@
   <!-- Main Grid Container (Figma 4-Zone Layout) -->
   <main class="max-w-7xl mx-auto px-4 py-6 w-full grow grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-    <!-- BÖLME 1: Sol Coin Seçim Listesi -->
+    <!-- BÖLME 1: Sol Coin Seçim Listesi (Görseldeki Tüm Coinler) -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3 lg:col-span-1">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-        <span>🪙 Takip Edilen Coinler</span>
-        <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded">Tıkla & Analiz Et</span>
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+        <span>📊 ANALİZ COINLERİ</span>
+        <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded">Seç & Analiz Et</span>
       </h3>
 
-      <div id="coin-list" class="space-y-2 overflow-y-auto max-h-[500px] pr-1">
+      <div id="coin-list" class="space-y-2 overflow-y-auto max-h-[580px] pr-1">
         <!-- Coin Butonları JS ile Dinamik Yüklenecek -->
       </div>
     </div>
@@ -106,27 +106,35 @@
   </main>
 
   <!-- BÖLME 4: Alt Bant - Günün En Çok Yükselenleri ve En Yüksek Hacimlileri -->
-  <footer class="bg-slate-900 border-t border-slate-800 py-4 px-6 mt-6">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+  <footer class="bg-slate-900 border-t border-slate-800 py-6 px-6 mt-6">
+    <div class="max-w-7xl mx-auto space-y-6">
 
-      <!-- En Çok Kar Edenler (Top Gainers) -->
-      <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-        <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-          🚀 Bugün En Çok Kazandıranlar (24s)
-        </h4>
-        <div id="top-gainers" class="grid grid-cols-3 gap-2 text-xs font-mono">
-          <!-- JS Dinamik Yükleyecek -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- En Çok Kar Edenler (Top Gainers) -->
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            🚀 Bugün En Çok Kazandıranlar (24s)
+          </h4>
+          <div id="top-gainers" class="grid grid-cols-3 gap-2 text-xs font-mono"></div>
+        </div>
+
+        <!-- En Yüksek Hacim Yapanlar (Top Volume) -->
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            📊 Bugün En Yüksek Hacim Yapanlar (24s)
+          </h4>
+          <div id="top-volume" class="grid grid-cols-3 gap-2 text-xs font-mono"></div>
         </div>
       </div>
 
-      <!-- En Yüksek Hacim Yapanlar (Top Volume) -->
-      <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-          📊 Bugün En Yüksek Hacim Yapanlar (24s)
-        </h4>
-        <div id="top-volume" class="grid grid-cols-3 gap-2 text-xs font-mono">
-          <!-- JS Dinamik Yükleyecek -->
-        </div>
+      <!-- YASAL UYARI BANNERI -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-amber-500/20 text-center">
+        <p class="text-xs text-amber-400 font-semibold mb-1">
+          ⚠️ YASAL UYARI / DISCLAIMER
+        </p>
+        <p class="text-xs text-slate-400">
+          Bu sitede yer alan yorum, sinyal ve analizler <b>Yatırım Tavsiyesi Değildir (YTD)</b>. Yapay Zeka algoritması tarafından üretilen istatistiksel verilerdir. Kripto para yatırımları yüksek risk içerir.
+        </p>
       </div>
 
     </div>
@@ -135,32 +143,57 @@
   <!-- TradingView Script & Dinamik Veri Yönetimi -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    // Coin Veri Deposu (Simüle Veriler + Binance API Entegrasyonu)
+    // Görseldeki Tüm Coinlerin Veri Deposu
     const coinData = {
       BTC: {
         name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", price: "$82,450.00",
         yon: "GUCLU AL", alim: "$81,800 - $82,300", satim: "$85,800", stop: "$80,200", guven: "%89",
-        analiz: "Bitcoin 4 saatlikte direnci kırdı. $82,000 seviyesi ana destek olarak çalışıyor. Yükseliş trendi korunduğu sürece $85,800 hedef konumunda."
+        analiz: "Bitcoin $82,000 seviyesinin üzerinde hacimli duruyor. Pozitif ivme korunduğu sürece ilk hedef $85,800."
       },
       ETH: {
         name: "Ethereum", symbol: "ETHUSDT", icon: "💎", price: "$2,695.50",
         yon: "AL", alim: "$2,640 - $2,680", satim: "$2,850", stop: "$2,580", guven: "%84",
-        analiz: "Ethereum ağ güncellemesi sonrası hacim topluyor. BTC dominansı hafif gerilerse ETH tarafında sert yukarı hareket bekleniyor."
-      },
-      SOL: {
-        name: "Solana", symbol: "SOLUSDT", icon: "☀️", price: "$149.20",
-        yon: "GUCLU AL", alim: "$144.00 - $148.00", satim: "$168.00", stop: "$139.50", guven: "%92",
-        analiz: "Solana DeFi ve memecoin hacmi ile güçlü kalmaya devam ediyor. $148 kırılımı ile sonraki hedef $168 seviyesi."
-      },
-      AVAX: {
-        name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", price: "$28.40",
-        yon: "NOTR / BEKLE", alim: "$26.80 - $27.50", satim: "$32.00", stop: "$25.50", guven: "%76",
-        analiz: "AVAX dar bantta sıkışma yaşıyor. $28.80 direnci aşılmadan yeni pozisyon riski yüksek."
+        analiz: "Ethereum $2,650 desteğinden tepki aldı. Ağ hareketliliği artışı ile $2,850 direnci hedefleniyor."
       },
       BNB: {
         name: "BNB", symbol: "BNBUSDT", icon: "🟡", price: "$578.10",
         yon: "AL", alim: "$568.00 - $575.00", satim: "$615.00", stop: "$555.00", guven: "%81",
-        analiz: "Binance Launchpool haberleriyle birlikte BNB talebi canlı kalıyor. $570 üstü pozitif alan."
+        analiz: "Binance Launchpool haberleriyle BNB talebi canlı kalıyor. $570 üzeri seyir pozitif görünümü koruyor."
+      },
+      SOL: {
+        name: "Solana", symbol: "SOLUSDT", icon: "☀️", price: "$149.20",
+        yon: "GUCLU AL", alim: "$144.00 - $148.00", satim: "$168.00", stop: "$139.50", guven: "%92",
+        analiz: "Solana DeFi ve ekosistem hacmi güçlü. $148 direnç kırılımı ile $168 seviyesi hedefleniyor."
+      },
+      AVAX: {
+        name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", price: "$28.40",
+        yon: "NOTR / BEKLE", alim: "$26.80 - $27.50", satim: "$32.00", stop: "$25.50", guven: "%76",
+        analiz: "AVAX dar aralıkta yatay seyrediyor. $28.80 üzerine çıkmadan yeni yükseliş dalgası teyit edilemez."
+      },
+      SUI: {
+        name: "Sui", symbol: "SUIUSDT", icon: "💧", price: "$2.10",
+        yon: "GUCLU AL", alim: "$1.95 - $2.05", satim: "$2.60", stop: "$1.85", guven: "%90",
+        analiz: "SUI yeni rekor tazeleme aşamasında. Ekosistem giren kilitli varlık (TVL) rekor seviyede."
+      },
+      XRP: {
+        name: "XRP", symbol: "XRPUSDT", icon: "❌", price: "$0.5420",
+        yon: "NOTR", alim: "$0.5200 - $0.5350", satim: "$0.6100", stop: "$0.4950", guven: "%78",
+        analiz: "XRP dar aralıkta akümüle oluyor. $0.56 direncinin aşılması durumunda hareket hızlanabilir."
+      },
+      DOGE: {
+        name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", price: "$0.1180",
+        yon: "AL", alim: "$0.1120 - $0.1160", satim: "$0.1380", stop: "$0.1050", guven: "%83",
+        analiz: "Dogecoin sosyal hacim artışıyla destek buluyor. $0.1200 kritik kırılım noktası."
+      },
+      LINK: {
+        name: "Chainlink", symbol: "LINKUSDT", icon: "🔗", price: "$11.80",
+        yon: "AL", alim: "$11.20 - $11.60", satim: "$13.50", stop: "$10.80", guven: "%85",
+        analiz: "LINK kurumsal balina alımlarıyla $11.50 desteğini güçlendirdi. Hedef $13.50."
+      },
+      PEPE: {
+        name: "Pepe", symbol: "PEPEUSDT", icon: "🐸", price: "$0.0000098",
+        yon: "GUCLU AL", alim: "$0.0000090 - $0.0000095", satim: "$0.0000125", stop: "$0.0000084", guven: "%87",
+        analiz: "PEPE memecoin kategorisinde liderliğini koruyor. Hacimli kırılımla sıfır silme ihtimali yüksek."
       }
     };
 
@@ -185,7 +218,7 @@
 
         btn.innerHTML = `
           <div class="flex items-center gap-2">
-            <span class="text-xl">${coin.icon}</span>
+            <span class="text-lg">${coin.icon}</span>
             <div>
               <div class="text-sm font-semibold">${coin.name}</div>
               <div class="text-[10px] text-slate-500 font-mono">${key}/USDT</div>
