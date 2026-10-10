@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crypto AI Pulse - Smart Trading Dashboard</title>
+  
+  <!-- Coinzilla Publisher Verification Meta Tag -->
+  <meta name="coinzilla" content="fea3f365d619d533a174c3cfe954cbc4" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </head>
@@ -31,18 +35,26 @@
     <!-- BÖLME 1: Sol Coin Seçim Listesi -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3 lg:col-span-1">
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-        <span>�� ANALİZ COINLERİ</span>
+        <span>📊 ANALİZ COINLERİ</span>
         <span class="text-[10px] bg-slate-800 text-emerald-400 px-2 py-0.5 rounded flex items-center gap-1">
           <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Canlı Binance
         </span>
       </h3>
 
-      <div id="coin-list" class="space-y-2 overflow-y-auto max-h-[580px] pr-1">
+      <div id="coin-list" class="space-y-2 overflow-y-auto max-h-[500px] pr-1">
         <!-- Coin Butonları JS ile Dinamik Yüklenecek -->
+      </div>
+
+      <!-- SOL REKLAM ALANI (Coinzilla Native / Banner) -->
+      <div class="mt-2 bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-center">
+        <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsorlu Alan</span>
+        <div id="coinzilla-ad-left" class="min-h-[100px] flex items-center justify-center text-xs text-slate-600 font-mono">
+          [ Coinzilla Reklam Alanı ]
+        </div>
       </div>
     </div>
 
-    <!-- BÖLME 2 & 3: Seçili Coin Detay Analizi + Grafik + Son Dakika Haberleri -->
+    <!-- BÖLME 2 & 3: Seçili Coin Detay Analizi + Grafik + Haberler -->
     <div class="lg:col-span-3 space-y-6">
 
       <!-- AI Analiz & Alım-Satım Sinyal Kartı -->
@@ -90,6 +102,14 @@
           <p id="sig-analiz" class="text-slate-300 leading-relaxed text-xs md:text-sm">
             Yapay zeka analiz verileri canlı fiyat akışıyla senkronize ediliyor...
           </p>
+        </div>
+      </div>
+
+      <!-- ORTA REKLAM BANNERI (Coinzilla 728x90 Leaderboard) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-xl text-center">
+        <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsorlu Finans İçeriği</span>
+        <div id="coinzilla-ad-banner" class="min-h-[90px] flex items-center justify-center text-xs text-slate-600 font-mono">
+          [ Coinzilla Ana Banner Reklam Alanı ]
         </div>
       </div>
 
@@ -180,18 +200,14 @@
     </div>
   </footer>
 
-  <!-- CANLI AI CHATBOT WIDGET (Sağ Alt Köşe) -->
+  <!-- CANLI AI CHATBOT WIDGET -->
   <div class="fixed bottom-5 right-5 z-50">
-    <!-- Chatbot Açma Butonu -->
     <button onclick="toggleChat()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-full shadow-2xl transition flex items-center gap-2 border-2 border-amber-300 active:scale-95">
       <span class="text-xl">🤖</span>
       <span class="text-xs md:text-sm">AI Asistana Sor</span>
     </button>
 
-    <!-- Chatbot Penceresi -->
     <div id="chat-window" class="hidden absolute bottom-16 right-0 w-[340px] sm:w-[380px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[480px]">
-      
-      <!-- Header -->
       <div class="bg-slate-950 p-3 border-b border-slate-800 flex justify-between items-center">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -200,25 +216,21 @@
         <button onclick="toggleChat()" class="text-slate-400 hover:text-white font-bold px-2 text-lg">&times;</button>
       </div>
 
-      <!-- Mesaj Listesi -->
       <div id="chat-messages" class="p-4 space-y-3 overflow-y-auto grow text-xs leading-relaxed">
         <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200">
-          👋 Selam! Ben Crypto AI Asistanı. Takip ettiğin coinler, canlı sinyaller veya piyasa hakkında bana soru sorabilirsin!
+          �� Selam! Ben Crypto AI Asistanı. Takip ettiğin coinler, canlı sinyaller veya piyasa hakkında bana soru sorabilirsin!
         </div>
       </div>
 
-      <!-- Hızlı Sorular -->
       <div class="px-3 py-2 bg-slate-950/50 border-t border-slate-800 flex gap-1.5 overflow-x-auto text-[10px]">
         <button onclick="quickAsk('BTC analizi nedir?')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2 py-1 rounded-lg border border-slate-700 whitespace-nowrap">₿ BTC Durumu</button>
         <button onclick="quickAsk('En güçlü sinyal hangi coinde?')" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-1 rounded-lg border border-slate-700 whitespace-nowrap">🔥 En Güçlü Sinyal</button>
       </div>
 
-      <!-- Input Alanı -->
       <div class="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
         <input id="chat-input" type="text" placeholder="Bir soru yazın..." onkeypress="if(event.key==='Enter') sendMessage()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
         <button onclick="sendMessage()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-2 rounded-xl text-xs transition">Gönder</button>
       </div>
-
     </div>
   </div>
 
@@ -230,7 +242,7 @@
       BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
       SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
       AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
-      SUI: { name: "Sui", symbol: "SUIUSDT", icon: "��", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuyor." },
+      SUI: { name: "Sui", symbol: "SUIUSDT", icon: "💧", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuyor." },
       XRP: { name: "XRP", symbol: "XRPUSDT", icon: "❌", yon: "NOTR", guven: "%78", tplow: 0.98, tphigh: 1.04, stop: 0.96, text: "XRP akümülasyon evresinde. $0.55 direncinin hacimli aşılması takibimizde." },
       DOGE: { name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", yon: "AL", guven: "%83", tplow: 0.96, tphigh: 1.07, stop: 0.94, text: "Dogecoin sosyal hacim verileri yükselişte. Kısa vadeli hareketlilik arttı." },
       LINK: { name: "Chainlink", symbol: "LINKUSDT", icon: "🔗", yon: "AL", guven: "%85", tplow: 0.975, tphigh: 1.06, stop: 0.955, text: "Chainlink balina alımlarıyla destek seviyesini sağlamlaştırdı. Yön yukarı görünüyor." },
@@ -386,7 +398,6 @@
       `).join('');
     }
 
-    // CHATBOT MANTIĞI
     function toggleChat() {
       const win = document.getElementById('chat-window');
       win.classList.toggle('hidden');
@@ -404,7 +415,6 @@
 
       const msgBox = document.getElementById('chat-messages');
 
-      // Kullanıcı mesajı
       msgBox.innerHTML += `
         <div class="bg-amber-500/20 text-amber-300 p-2.5 rounded-xl border border-amber-500/30 ml-6 text-right">
           ${text}
@@ -413,7 +423,6 @@
       input.value = '';
       msgBox.scrollTop = msgBox.scrollHeight;
 
-      // AI Yanıtı
       setTimeout(() => {
         let reply = "Piyasayı inceliyorum... Borsa verilerine göre pozitif görünüm devam ediyor.";
         const lower = text.toLowerCase();
@@ -429,7 +438,7 @@
 
         msgBox.innerHTML += `
           <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200 mr-6">
-            🤖 ${reply}
+            �� ${reply}
           </div>
         `;
         msgBox.scrollTop = msgBox.scrollHeight;
