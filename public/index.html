@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crypto AI Pulse - Smart Trading Dashboard</title>
   
-  <!-- Coinzilla Publisher Verification Meta Tag -->
   <meta name="coinzilla" content="fea3f365d619d533a174c3cfe954cbc4" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,13 +33,13 @@
         </div>
 
         <a href="https://www.binance.com/register?ref=17862552" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs md:text-sm shadow-md transition flex items-center gap-2">
-          <span>🟡 Binance %20 İndirimli Kayıt</span>
+          <span>�� Binance %20 İndirimli Kayıt</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- E-POSTA GİRİŞ / KAYIT OLUŞTURMA MODAL POP-UP -->
+  <!-- E-POSTA GİRİŞ / KAYIT MODAL POP-UP -->
   <div id="auth-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
       <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-xl">&times;</button>
@@ -48,7 +47,7 @@
       <div class="text-center mb-6">
         <span class="text-3xl">🔑</span>
         <h3 id="modal-title" class="text-lg font-bold text-amber-400 mt-2">Giriş Yap</h3>
-        <p class="text-xs text-slate-400">Crypto AI Pulse dünyasına erişim sağlayın</p>
+        <p class="text-xs text-slate-400">Analiz ve sinyallere erişmek için e-posta adresinizle giriş yapın</p>
       </div>
 
       <form onsubmit="handleAuth(event)" class="space-y-4">
@@ -99,8 +98,20 @@
       </div>
     </div>
 
-    <!-- BÖLME 2 & 3: Seçili Coin Detay Analizi + Grafik + Haberler -->
-    <div class="lg:col-span-3 space-y-6">
+    <!-- BÖLME 2 & 3: Seçili Coin Detay Analizi + Grafik + Haberler (Giriş Kilitli Alan) -->
+    <div class="lg:col-span-3 space-y-6 relative">
+
+      <!-- GİRİŞ YAPILMADIĞINDA ÇIKACAK KİLİT PERDESİ (GATE OVERLAY) -->
+      <div id="content-lock-overlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center rounded-2xl border border-amber-500/30">
+        <span class="text-5xl mb-3">🔒</span>
+        <h3 class="text-xl font-bold text-amber-400 mb-2">Detaylı AI Verileri Kilitli</h3>
+        <p class="text-xs text-slate-300 max-w-md mb-5 leading-relaxed">
+          Canlı AI sinyallerini, alım-satım bölgelerini, TradingView grafiklerini ve anlık haber akışını görüntülemek için ücretsiz e-posta girişi yapın.
+        </p>
+        <button onclick="toggleAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-xl text-xs md:text-sm shadow-xl transition active:scale-95 flex items-center gap-2">
+          <span>✉️ Ücretsiz Giriş Yap / Kayıt Ol</span>
+        </button>
+      </div>
 
       <!-- AI Analiz & Alım-Satım Sinyal Kartı -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
@@ -180,7 +191,7 @@
           <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80 flex flex-col md:flex-row justify-between md:items-center gap-2 hover:border-slate-700 transition">
             <div>
               <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded font-semibold">PİYASA</span>
-              <h4 class="text-sm font-semibold text-slate-200 mt-1">Bitcoin (BTC) $83,000 Seviyelerinde Konsolide Oluyor</h4>
+              <h4 class="text-sm font-semibold text-slate-200 mt-1">Bitcoin (BTC) $83,000 Seviyalarında Konsolide Oluyor</h4>
               <p class="text-xs text-slate-400">Vadeli işlem piyasalarındaki likidasyon dalgasının ardından Bitcoin kritik destek seviyelerinde dengelenme sürecine girdi.</p>
             </div>
             <span class="text-[11px] text-slate-500 whitespace-nowrap font-mono">10 Dakika Önce</span>
@@ -283,7 +294,7 @@
   <script>
     const coins = {
       BTC: { name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", yon: "GUCLU AL", guven: "%89", tplow: 0.99, tphigh: 1.04, stop: 0.97, text: "Bitcoin destek bölgesinde hacimli duruyor. Pozitif momentum korunduğu sürece üst hedefler geçerliliğini korur." },
-      ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "��", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
+      ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "💎", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
       BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
       SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
       AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
@@ -444,7 +455,7 @@
       `).join('');
     }
 
-    // AUTH / E-POSTA GİRİŞ MANTIĞI
+    // AUTH & VERİ KİLİTLEME MANTIĞI
     function toggleAuthModal() {
       const modal = document.getElementById('auth-modal');
       modal.classList.toggle('hidden');
@@ -461,7 +472,6 @@
       event.preventDefault();
       const email = document.getElementById('auth-email').value;
       
-      // Giriş yapıldı olarak oturumu kaydet
       localStorage.setItem('user_email', email);
       
       updateUserHeader();
@@ -471,6 +481,7 @@
     function updateUserHeader() {
       const email = localStorage.getItem('user_email');
       const section = document.getElementById('user-auth-section');
+      const lockOverlay = document.getElementById('content-lock-overlay');
 
       if (email) {
         section.innerHTML = `
@@ -479,6 +490,8 @@
             <button onclick="logoutUser()" class="text-[10px] bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 px-2 py-0.5 rounded border border-rose-500/30">Çıkış</button>
           </div>
         `;
+        // Giriş yapıldıysa kilit perdesini kaldır
+        lockOverlay.classList.add('hidden');
       } else {
         section.innerHTML = `
           <button onclick="toggleAuthModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-lg text-xs md:text-sm border border-slate-700 transition flex items-center gap-1.5">
@@ -486,6 +499,8 @@
             <span>Giriş Yap / Kayıt Ol</span>
           </button>
         `;
+        // Giriş yapılmadıysa kilit perdesini göster
+        lockOverlay.classList.remove('hidden');
       }
     }
 
