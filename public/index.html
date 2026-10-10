@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crypto AI Pulse - Smart Trading Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- TradingView tv.js Kütüphanesini Sayfa Başında Yüklüyoruz -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between relative">
 
   <!-- Header -->
   <header class="bg-slate-900 border-b border-slate-800 py-4 px-6">
@@ -32,7 +31,7 @@
     <!-- BÖLME 1: Sol Coin Seçim Listesi -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3 lg:col-span-1">
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-        <span>📊 ANALİZ COINLERİ</span>
+        <span>�� ANALİZ COINLERİ</span>
         <span class="text-[10px] bg-slate-800 text-emerald-400 px-2 py-0.5 rounded flex items-center gap-1">
           <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Canlı Binance
         </span>
@@ -154,7 +153,7 @@
         <!-- Top Gainers -->
         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
           <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            �� Bugün En Çok Kazandıranlar (24s)
+            🚀 Bugün En Çok Kazandıranlar (24s)
           </h4>
           <div id="top-gainers" class="grid grid-cols-3 gap-2 text-xs font-mono"></div>
         </div>
@@ -181,15 +180,57 @@
     </div>
   </footer>
 
+  <!-- CANLI AI CHATBOT WIDGET (Sağ Alt Köşe) -->
+  <div class="fixed bottom-5 right-5 z-50">
+    <!-- Chatbot Açma Butonu -->
+    <button onclick="toggleChat()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-full shadow-2xl transition flex items-center gap-2 border-2 border-amber-300 active:scale-95">
+      <span class="text-xl">🤖</span>
+      <span class="text-xs md:text-sm">AI Asistana Sor</span>
+    </button>
+
+    <!-- Chatbot Penceresi -->
+    <div id="chat-window" class="hidden absolute bottom-16 right-0 w-[340px] sm:w-[380px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[480px]">
+      
+      <!-- Header -->
+      <div class="bg-slate-950 p-3 border-b border-slate-800 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
+          <span class="text-sm font-bold text-amber-400">Crypto AI Asistanı</span>
+        </div>
+        <button onclick="toggleChat()" class="text-slate-400 hover:text-white font-bold px-2 text-lg">&times;</button>
+      </div>
+
+      <!-- Mesaj Listesi -->
+      <div id="chat-messages" class="p-4 space-y-3 overflow-y-auto grow text-xs leading-relaxed">
+        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200">
+          👋 Selam! Ben Crypto AI Asistanı. Takip ettiğin coinler, canlı sinyaller veya piyasa hakkında bana soru sorabilirsin!
+        </div>
+      </div>
+
+      <!-- Hızlı Sorular -->
+      <div class="px-3 py-2 bg-slate-950/50 border-t border-slate-800 flex gap-1.5 overflow-x-auto text-[10px]">
+        <button onclick="quickAsk('BTC analizi nedir?')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2 py-1 rounded-lg border border-slate-700 whitespace-nowrap">₿ BTC Durumu</button>
+        <button onclick="quickAsk('En güçlü sinyal hangi coinde?')" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-1 rounded-lg border border-slate-700 whitespace-nowrap">🔥 En Güçlü Sinyal</button>
+      </div>
+
+      <!-- Input Alanı -->
+      <div class="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
+        <input id="chat-input" type="text" placeholder="Bir soru yazın..." onkeypress="if(event.key==='Enter') sendMessage()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
+        <button onclick="sendMessage()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-2 rounded-xl text-xs transition">Gönder</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script>
     const coins = {
       BTC: { name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", yon: "GUCLU AL", guven: "%89", tplow: 0.99, tphigh: 1.04, stop: 0.97, text: "Bitcoin destek bölgesinde hacimli duruyor. Pozitif momentum korunduğu sürece üst hedefler geçerliliğini korur." },
       ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "💎", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
-      BNB: { name: "BNB", symbol: "BNBUSDT", icon: "��", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
+      BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
       SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
       AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
-      SUI: { name: "Sui", symbol: "SUIUSDT", icon: "💧", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuyor." },
+      SUI: { name: "Sui", symbol: "SUIUSDT", icon: "��", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuyor." },
       XRP: { name: "XRP", symbol: "XRPUSDT", icon: "❌", yon: "NOTR", guven: "%78", tplow: 0.98, tphigh: 1.04, stop: 0.96, text: "XRP akümülasyon evresinde. $0.55 direncinin hacimli aşılması takibimizde." },
       DOGE: { name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", yon: "AL", guven: "%83", tplow: 0.96, tphigh: 1.07, stop: 0.94, text: "Dogecoin sosyal hacim verileri yükselişte. Kısa vadeli hareketlilik arttı." },
       LINK: { name: "Chainlink", symbol: "LINKUSDT", icon: "🔗", yon: "AL", guven: "%85", tplow: 0.975, tphigh: 1.06, stop: 0.955, text: "Chainlink balina alımlarıyla destek seviyesini sağlamlaştırdı. Yön yukarı görünüyor." },
@@ -295,10 +336,9 @@
       }
     }
 
-    // TradingView Grafiğini Güvenli ve Hızlı Yükleme Fonksiyonu
     function loadTradingViewWidget(symbol) {
       const container = document.getElementById('tv_chart_container');
-      container.innerHTML = ''; // İçini temizle
+      container.innerHTML = '';
       
       if (typeof TradingView !== 'undefined') {
         new TradingView.widget({
@@ -346,12 +386,61 @@
       `).join('');
     }
 
+    // CHATBOT MANTIĞI
+    function toggleChat() {
+      const win = document.getElementById('chat-window');
+      win.classList.toggle('hidden');
+    }
+
+    function quickAsk(text) {
+      document.getElementById('chat-input').value = text;
+      sendMessage();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const msgBox = document.getElementById('chat-messages');
+
+      // Kullanıcı mesajı
+      msgBox.innerHTML += `
+        <div class="bg-amber-500/20 text-amber-300 p-2.5 rounded-xl border border-amber-500/30 ml-6 text-right">
+          ${text}
+        </div>
+      `;
+      input.value = '';
+      msgBox.scrollTop = msgBox.scrollHeight;
+
+      // AI Yanıtı
+      setTimeout(() => {
+        let reply = "Piyasayı inceliyorum... Borsa verilerine göre pozitif görünüm devam ediyor.";
+        const lower = text.toLowerCase();
+
+        if (lower.includes('btc') || lower.includes('bitcoin')) {
+          const btcPrice = livePrices['BTCUSDT'] ? formatPrice(livePrices['BTCUSDT']) : '$83,000';
+          reply = `Bitcoin şu an ${btcPrice} seviyesinde. AI sinyalimiz 'GÜÇLÜ AL' yönünde ve $82,000 seviyesi ana destek olarak korunuyor.`;
+        } else if (lower.includes('güçlü') || lower.includes('sinyal')) {
+          reply = "Şu an en yüksek AI güven oranına sahip coinler: Solana (%92) ve Sui (%90) ile 'GÜÇLÜ AL' sinyalinde.";
+        } else if (lower.includes('eth') || lower.includes('ethereum')) {
+          reply = "Ethereum $2,650 desteğinde tutunuyor. Ağ hacmi yükselişte, hedef $2,850.";
+        }
+
+        msgBox.innerHTML += `
+          <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200 mr-6">
+            🤖 ${reply}
+          </div>
+        `;
+        msgBox.scrollTop = msgBox.scrollHeight;
+      }, 600);
+    }
+
     window.onload = async () => {
       renderCoinList();
       selectCoin('BTC');
       renderFooterStats();
       
-      // İlk Grafik Yüklemesini DOM Oturduktan Sonra Tetikle
       setTimeout(() => {
         loadTradingViewWidget('BINANCE:BTCUSDT');
       }, 300);
