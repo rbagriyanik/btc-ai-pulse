@@ -23,11 +23,56 @@
           <p class="text-xs text-slate-400">Yapay Zeka Destekli Çoklu Coin Analiz Platformu</p>
         </div>
       </div>
-      <a href="https://www.binance.com/register?ref=17862552" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs md:text-sm shadow-md transition flex items-center gap-2">
-        <span>🟡 Binance %20 İndirimli Kayıt</span>
-      </a>
+      
+      <div class="flex items-center gap-3">
+        <!-- E-posta Giriş / Profil Alanı -->
+        <div id="user-auth-section">
+          <button onclick="toggleAuthModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-lg text-xs md:text-sm border border-slate-700 transition flex items-center gap-1.5">
+            <span>✉️</span>
+            <span>Giriş Yap / Kayıt Ol</span>
+          </button>
+        </div>
+
+        <a href="https://www.binance.com/register?ref=17862552" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs md:text-sm shadow-md transition flex items-center gap-2">
+          <span>🟡 Binance %20 İndirimli Kayıt</span>
+        </a>
+      </div>
     </div>
   </header>
+
+  <!-- E-POSTA GİRİŞ / KAYIT OLUŞTURMA MODAL POP-UP -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+      <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-xl">&times;</button>
+      
+      <div class="text-center mb-6">
+        <span class="text-3xl">🔑</span>
+        <h3 id="modal-title" class="text-lg font-bold text-amber-400 mt-2">Giriş Yap</h3>
+        <p class="text-xs text-slate-400">Crypto AI Pulse dünyasına erişim sağlayın</p>
+      </div>
+
+      <form onsubmit="handleAuth(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">E-Posta Adresi</label>
+          <input id="auth-email" type="email" required placeholder="ornek@gmail.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Şifre</label>
+          <input id="auth-password" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition shadow-lg">
+          Giriş Yap
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <button onclick="toggleAuthMode()" id="auth-switch-btn" class="text-xs text-amber-400 hover:underline">
+          Hesabın yok mu? Kayıt Ol
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Main Grid Container -->
   <main class="max-w-7xl mx-auto px-4 py-6 w-full grow grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -45,7 +90,7 @@
         <!-- Coin Butonları JS ile Dinamik Yüklenecek -->
       </div>
 
-      <!-- SOL REKLAM ALANI (Coinzilla Native / Banner) -->
+      <!-- SOL REKLAM ALANI -->
       <div class="mt-2 bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-center">
         <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsorlu Alan</span>
         <div id="coinzilla-ad-left" class="min-h-[100px] flex items-center justify-center text-xs text-slate-600 font-mono">
@@ -105,7 +150,7 @@
         </div>
       </div>
 
-      <!-- ORTA REKLAM BANNERI (Coinzilla 728x90 Leaderboard) -->
+      <!-- ORTA REKLAM BANNERI -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-xl text-center">
         <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsorlu Finans İçeriği</span>
         <div id="coinzilla-ad-banner" class="min-h-[90px] flex items-center justify-center text-xs text-slate-600 font-mono">
@@ -218,7 +263,7 @@
 
       <div id="chat-messages" class="p-4 space-y-3 overflow-y-auto grow text-xs leading-relaxed">
         <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200">
-          �� Selam! Ben Crypto AI Asistanı. Takip ettiğin coinler, canlı sinyaller veya piyasa hakkında bana soru sorabilirsin!
+          👋 Selam! Ben Crypto AI Asistanı. Takip ettiğin coinler, canlı sinyaller veya piyasa hakkında bana soru sorabilirsin!
         </div>
       </div>
 
@@ -238,7 +283,7 @@
   <script>
     const coins = {
       BTC: { name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", yon: "GUCLU AL", guven: "%89", tplow: 0.99, tphigh: 1.04, stop: 0.97, text: "Bitcoin destek bölgesinde hacimli duruyor. Pozitif momentum korunduğu sürece üst hedefler geçerliliğini korur." },
-      ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "💎", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
+      ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "��", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
       BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
       SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
       AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
@@ -251,6 +296,7 @@
 
     let livePrices = {};
     let activeSymbol = "BTC";
+    let isSignUpMode = false;
 
     function formatPrice(price) {
       const p = parseFloat(price);
@@ -398,6 +444,57 @@
       `).join('');
     }
 
+    // AUTH / E-POSTA GİRİŞ MANTIĞI
+    function toggleAuthModal() {
+      const modal = document.getElementById('auth-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function toggleAuthMode() {
+      isSignUpMode = !isSignUpMode;
+      document.getElementById('modal-title').innerText = isSignUpMode ? "Hesap Oluştur" : "Giriş Yap";
+      document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "Kayıt Ol" : "Giriş Yap";
+      document.getElementById('auth-switch-btn').innerText = isSignUpMode ? "Zaten hesabın var mı? Giriş Yap" : "Hesabın yok mu? Kayıt Ol";
+    }
+
+    function handleAuth(event) {
+      event.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      
+      // Giriş yapıldı olarak oturumu kaydet
+      localStorage.setItem('user_email', email);
+      
+      updateUserHeader();
+      toggleAuthModal();
+    }
+
+    function updateUserHeader() {
+      const email = localStorage.getItem('user_email');
+      const section = document.getElementById('user-auth-section');
+
+      if (email) {
+        section.innerHTML = `
+          <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+            <span class="text-xs text-amber-400 font-mono">👤 ${email.split('@')[0]}</span>
+            <button onclick="logoutUser()" class="text-[10px] bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 px-2 py-0.5 rounded border border-rose-500/30">Çıkış</button>
+          </div>
+        `;
+      } else {
+        section.innerHTML = `
+          <button onclick="toggleAuthModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-lg text-xs md:text-sm border border-slate-700 transition flex items-center gap-1.5">
+            <span>✉️</span>
+            <span>Giriş Yap / Kayıt Ol</span>
+          </button>
+        `;
+      }
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('user_email');
+      updateUserHeader();
+    }
+
+    // CHATBOT MANTIĞI
     function toggleChat() {
       const win = document.getElementById('chat-window');
       win.classList.toggle('hidden');
@@ -438,7 +535,7 @@
 
         msgBox.innerHTML += `
           <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200 mr-6">
-            �� ${reply}
+            🤖 ${reply}
           </div>
         `;
         msgBox.scrollTop = msgBox.scrollHeight;
@@ -449,6 +546,7 @@
       renderCoinList();
       selectCoin('BTC');
       renderFooterStats();
+      updateUserHeader();
       
       setTimeout(() => {
         loadTradingViewWidget('BINANCE:BTCUSDT');
