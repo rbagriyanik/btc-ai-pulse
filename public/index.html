@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crypto AI Pulse - Smart Trading Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- TradingView tv.js Kütüphanesini Sayfa Başında Yüklüyoruz -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
 
@@ -98,8 +100,8 @@
           <span>📈 Canlı TradingView Grafiği</span>
           <span id="chart-symbol-label" class="font-mono text-amber-400">BINANCE:BTCUSDT</span>
         </h3>
-        <div class="w-full h-[420px] rounded-xl overflow-hidden">
-          <div id="tradingview_widget_container" class="w-full h-full"></div>
+        <div class="w-full h-[450px] rounded-xl overflow-hidden relative">
+          <div id="tv_chart_container" class="w-full h-full"></div>
         </div>
       </div>
 
@@ -152,7 +154,7 @@
         <!-- Top Gainers -->
         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
           <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            🚀 Bugün En Çok Kazandıranlar (24s)
+            �� Bugün En Çok Kazandıranlar (24s)
           </h4>
           <div id="top-gainers" class="grid grid-cols-3 gap-2 text-xs font-mono"></div>
         </div>
@@ -180,14 +182,13 @@
   </footer>
 
   <!-- Scripts -->
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
     const coins = {
       BTC: { name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", yon: "GUCLU AL", guven: "%89", tplow: 0.99, tphigh: 1.04, stop: 0.97, text: "Bitcoin destek bölgesinde hacimli duruyor. Pozitif momentum korunduğu sürece üst hedefler geçerliliğini korur." },
       ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "💎", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
-      BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
+      BNB: { name: "BNB", symbol: "BNBUSDT", icon: "��", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
       SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
-      AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "��", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
+      AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
       SUI: { name: "Sui", symbol: "SUIUSDT", icon: "💧", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuyor." },
       XRP: { name: "XRP", symbol: "XRPUSDT", icon: "❌", yon: "NOTR", guven: "%78", tplow: 0.98, tphigh: 1.04, stop: 0.96, text: "XRP akümülasyon evresinde. $0.55 direncinin hacimli aşılması takibimizde." },
       DOGE: { name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", yon: "AL", guven: "%83", tplow: 0.96, tphigh: 1.07, stop: 0.94, text: "Dogecoin sosyal hacim verileri yükselişte. Kısa vadeli hareketlilik arttı." },
@@ -294,20 +295,25 @@
       }
     }
 
+    // TradingView Grafiğini Güvenli ve Hızlı Yükleme Fonksiyonu
     function loadTradingViewWidget(symbol) {
-      document.getElementById('tradingview_widget_container').innerHTML = '';
-      new TradingView.widget({
-        "autosize": true,
-        "symbol": symbol,
-        "interval": "60",
-        "timezone": "Etc/UTC",
-        "theme": "dark",
-        "style": "1",
-        "locale": "tr",
-        "enable_publishing": false,
-        "allow_symbol_change": false,
-        "container_id": "tradingview_widget_container"
-      });
+      const container = document.getElementById('tv_chart_container');
+      container.innerHTML = ''; // İçini temizle
+      
+      if (typeof TradingView !== 'undefined') {
+        new TradingView.widget({
+          "autosize": true,
+          "symbol": symbol,
+          "interval": "60",
+          "timezone": "Etc/UTC",
+          "theme": "dark",
+          "style": "1",
+          "locale": "tr",
+          "enable_publishing": false,
+          "allow_symbol_change": true,
+          "container_id": "tv_chart_container"
+        });
+      }
     }
 
     function renderFooterStats() {
@@ -344,6 +350,12 @@
       renderCoinList();
       selectCoin('BTC');
       renderFooterStats();
+      
+      // İlk Grafik Yüklemesini DOM Oturduktan Sonra Tetikle
+      setTimeout(() => {
+        loadTradingViewWidget('BINANCE:BTCUSDT');
+      }, 300);
+
       await updateBinancePrices();
       setInterval(updateBinancePrices, 5000);
     };
