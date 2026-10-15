@@ -3,573 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crypto AI Pulse - Smart Trading Dashboard</title>
-  
-  <meta name="coinzilla" content="fea3f365d619d533a174c3cfe954cbc4" />
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between relative">
-
-  <!-- Header -->
-  <header class="bg-slate-900 border-b border-slate-800 py-4 px-6">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">⚡</span>
-        <div>
-          <h1 class="text-xl font-bold text-amber-400">Crypto AI Pulse</h1>
-          <p class="text-xs text-slate-400">Yapay Zeka Destekli Çoklu Coin Analiz Platformu</p>
-        </div>
-      </div>
-      
-      <div class="flex items-center gap-3">
-        <!-- E-posta Giriş / Profil Alanı -->
-        <div id="user-auth-section">
-          <button onclick="toggleAuthModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-lg text-xs md:text-sm border border-slate-700 transition flex items-center gap-1.5">
-            <span>✉️</span>
-            <span>Giriş Yap / Kayıt Ol</span>
-          </button>
-        </div>
-
-        <a href="https://www.binance.com/register?ref=17862552" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs md:text-sm shadow-md transition flex items-center gap-2">
-          <span>�� Binance %20 İndirimli Kayıt</span>
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- E-POSTA GİRİŞ / KAYIT MODAL POP-UP -->
-  <div id="auth-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-      <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-xl">&times;</button>
-      
-      <div class="text-center mb-6">
-        <span class="text-3xl">🔑</span>
-        <h3 id="modal-title" class="text-lg font-bold text-amber-400 mt-2">Giriş Yap</h3>
-        <p class="text-xs text-slate-400">Analiz ve sinyallere erişmek için e-posta adresinizle giriş yapın</p>
-      </div>
-
-      <form onsubmit="handleAuth(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">E-Posta Adresi</label>
-          <input id="auth-email" type="email" required placeholder="ornek@gmail.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
-        </div>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Şifre</label>
-          <input id="auth-password" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
-        </div>
-
-        <button type="submit" id="auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition shadow-lg">
-          Giriş Yap
-        </button>
-      </form>
-
-      <div class="mt-4 text-center">
-        <button onclick="toggleAuthMode()" id="auth-switch-btn" class="text-xs text-amber-400 hover:underline">
-          Hesabın yok mu? Kayıt Ol
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Grid Container -->
-  <main class="max-w-7xl mx-auto px-4 py-6 w-full grow grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-    <!-- BÖLME 1: Sol Coin Seçim Listesi -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3 lg:col-span-1">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-        <span>📊 ANALİZ COINLERİ</span>
-        <span class="text-[10px] bg-slate-800 text-emerald-400 px-2 py-0.5 rounded flex items-center gap-1">
-          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> Canlı Binance
-        </span>
-      </h3>
-
-      <div id="coin-list" class="space-y-2 overflow-y-auto max-h-[500px] pr-1">
-        <!-- Coin Butonları JS ile Dinamik Yüklenecek -->
-      </div>
-
-      <!-- SOL REKLAM ALANI -->
-      <div class="mt-2 bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-center">
-        <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsorlu Alan</span>
-        <div id="coinzilla-ad-left" class="min-h-[100px] flex items-center justify-center text-xs text-slate-600 font-mono">
-          [ Coinzilla Reklam Alanı ]
-        </div>
-      </div>
-    </div>
-
-    <!-- BÖLME 2 & 3: Seçili Coin Detay Analizi + Grafik + Haberler (Giriş Kilitli Alan) -->
-    <div class="lg:col-span-3 space-y-6 relative">
-
-      <!-- GİRİŞ YAPILMADIĞINDA ÇIKACAK KİLİT PERDESİ (GATE OVERLAY) -->
-      <div id="content-lock-overlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center rounded-2xl border border-amber-500/30">
-        <span class="text-5xl mb-3">🔒</span>
-        <h3 class="text-xl font-bold text-amber-400 mb-2">Detaylı AI Verileri Kilitli</h3>
-        <p class="text-xs text-slate-300 max-w-md mb-5 leading-relaxed">
-          Canlı AI sinyallerini, alım-satım bölgelerini, TradingView grafiklerini ve anlık haber akışını görüntülemek için ücretsiz e-posta girişi yapın.
-        </p>
-        <button onclick="toggleAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-xl text-xs md:text-sm shadow-xl transition active:scale-95 flex items-center gap-2">
-          <span>✉️ Ücretsiz Giriş Yap / Kayıt Ol</span>
-        </button>
-      </div>
-
-      <!-- AI Analiz & Alım-Satım Sinyal Kartı -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
-          <div class="flex items-center gap-3">
-            <span id="active-coin-icon" class="text-3xl">₿</span>
-            <div>
-              <h2 id="active-coin-title" class="text-2xl font-bold text-amber-400">Bitcoin (BTC/USDT)</h2>
-              <p class="text-xs text-slate-400">Yapay Zeka Anlık Sinyal ve Hedef Seviyeleri</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-xs text-slate-400">Binance Anlık Fiyat</div>
-            <div id="active-coin-price" class="text-xl font-mono font-bold text-emerald-400">Yükleniyor...</div>
-          </div>
-        </div>
-
-        <!-- Sinyal Metrikleri -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-            <div class="text-xs text-slate-400 mb-1">Sinyal Yönü</div>
-            <div id="sig-yon" class="text-base font-bold text-emerald-400">GUCLU AL</div>
-          </div>
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-            <div class="text-xs text-slate-400 mb-1">Alım Bölgesi (Buy)</div>
-            <div id="sig-alim" class="text-base font-mono font-bold text-sky-400">-</div>
-          </div>
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-            <div class="text-xs text-slate-400 mb-1">Satım / Hedef (TP)</div>
-            <div id="sig-satim" class="text-base font-mono font-bold text-purple-400">-</div>
-          </div>
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-            <div class="text-xs text-slate-400 mb-1">Stop-Loss</div>
-            <div id="sig-stop" class="text-base font-mono font-bold text-rose-400">-</div>
-          </div>
-        </div>
-
-        <!-- AI Detaylı Yorum -->
-        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 text-sm">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xs text-amber-400 font-semibold flex items-center gap-1">🤖 AI TEKNİK VE DUYGU ANALİZİ</span>
-            <span id="sig-guven" class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono">Güven: %89</span>
-          </div>
-          <p id="sig-analiz" class="text-slate-300 leading-relaxed text-xs md:text-sm">
-            Yapay zeka analiz verileri canlı fiyat akışıyla senkronize ediliyor...
-          </p>
-        </div>
-      </div>
-
-      <!-- ORTA REKLAM BANNERI -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-xl text-center">
-        <span class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Sponsorlu Finans İçeriği</span>
-        <div id="coinzilla-ad-banner" class="min-h-[90px] flex items-center justify-center text-xs text-slate-600 font-mono">
-          [ Coinzilla Ana Banner Reklam Alanı ]
-        </div>
-      </div>
-
-      <!-- TradingView Canlı Grafik Bölümü -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
-          <span>📈 Canlı TradingView Grafiği</span>
-          <span id="chart-symbol-label" class="font-mono text-amber-400">BINANCE:BTCUSDT</span>
-        </h3>
-        <div class="w-full h-[450px] rounded-xl overflow-hidden relative">
-          <div id="tv_chart_container" class="w-full h-full"></div>
-        </div>
-      </div>
-
-      <!-- SON DAKİKA KRİPTO HABERLERİ ALANI -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <span>📰 Anlık Son Dakika Kripto & Piyasa Akışı</span>
-          <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-mono animate-pulse">CANLI</span>
-        </h3>
-
-        <div class="space-y-3">
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80 flex flex-col md:flex-row justify-between md:items-center gap-2 hover:border-slate-700 transition">
-            <div>
-              <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded font-semibold">PİYASA</span>
-              <h4 class="text-sm font-semibold text-slate-200 mt-1">Bitcoin (BTC) $83,000 Seviyalarında Konsolide Oluyor</h4>
-              <p class="text-xs text-slate-400">Vadeli işlem piyasalarındaki likidasyon dalgasının ardından Bitcoin kritik destek seviyelerinde dengelenme sürecine girdi.</p>
-            </div>
-            <span class="text-[11px] text-slate-500 whitespace-nowrap font-mono">10 Dakika Önce</span>
-          </div>
-
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80 flex flex-col md:flex-row justify-between md:items-center gap-2 hover:border-slate-700 transition">
-            <div>
-              <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-semibold">ETF & KURUMSAL</span>
-              <h4 class="text-sm font-semibold text-slate-200 mt-1">Spot Bitcoin ETF'lerinde Kurumsal İşlem Hacmi Canlı Kalıyor</h4>
-              <p class="text-xs text-slate-400">Küresel ETF veri akışlarında kurumsal yatırımcıların uzun vadeli akümülasyon stratejilerini koruduğu gözlemleniyor.</p>
-            </div>
-            <span class="text-[11px] text-slate-500 whitespace-nowrap font-mono">35 Dakika Önce</span>
-          </div>
-
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80 flex flex-col md:flex-row justify-between md:items-center gap-2 hover:border-slate-700 transition">
-            <div>
-              <span class="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded font-semibold">ALTCOIN</span>
-              <h4 class="text-sm font-semibold text-slate-200 mt-1">Ethereum ve Katman-1 Ekosistemlerinde Hacim Geçişleri</h4>
-              <p class="text-xs text-slate-400">Solana ve SUI gibi ağlarda TVL kilitli varlık miktarları rekor tazelerken altcoin piyasasında seçici hareketler öne çıkıyor.</p>
-            </div>
-            <span class="text-[11px] text-slate-500 whitespace-nowrap font-mono">1 Saat Önce</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </main>
-
-  <!-- BÖLME 4: Alt Bant -->
-  <footer class="bg-slate-900 border-t border-slate-800 py-6 px-6 mt-6">
-    <div class="max-w-7xl mx-auto space-y-6">
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Top Gainers -->
-        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-          <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            🚀 Bugün En Çok Kazandıranlar (24s)
-          </h4>
-          <div id="top-gainers" class="grid grid-cols-3 gap-2 text-xs font-mono"></div>
-        </div>
-
-        <!-- Top Volume -->
-        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            📊 Bugün En Yüksek Hacim Yapanlar (24s)
-          </h4>
-          <div id="top-volume" class="grid grid-cols-3 gap-2 text-xs font-mono"></div>
-        </div>
-      </div>
-
-      <!-- YASAL UYARI BANNERI -->
-      <div class="bg-slate-950 p-4 rounded-xl border border-amber-500/20 text-center">
-        <p class="text-xs text-amber-400 font-semibold mb-1">
-          ⚠️ YASAL UYARI / DISCLAIMER
-        </p>
-        <p class="text-xs text-slate-400">
-          Bu sitede yer alan yorum, haber, sinyal ve analizler <b>Yatırım Tavsiyesi Değildir (YTD)</b>. Yapay Zeka algoritması tarafından üretilen istatistiksel verilerdir.
-        </p>
-      </div>
-
-    </div>
-  </footer>
-
-  <!-- CANLI AI CHATBOT WIDGET -->
-  <div class="fixed bottom-5 right-5 z-50">
-    <button onclick="toggleChat()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-full shadow-2xl transition flex items-center gap-2 border-2 border-amber-300 active:scale-95">
-      <span class="text-xl">🤖</span>
-      <span class="text-xs md:text-sm">AI Asistana Sor</span>
-    </button>
-
-    <div id="chat-window" class="hidden absolute bottom-16 right-0 w-[340px] sm:w-[380px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[480px]">
-      <div class="bg-slate-950 p-3 border-b border-slate-800 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
-          <span class="text-sm font-bold text-amber-400">Crypto AI Asistanı</span>
-        </div>
-        <button onclick="toggleChat()" class="text-slate-400 hover:text-white font-bold px-2 text-lg">&times;</button>
-      </div>
-
-      <div id="chat-messages" class="p-4 space-y-3 overflow-y-auto grow text-xs leading-relaxed">
-        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200">
-          👋 Selam! Ben Crypto AI Asistanı. Takip ettiğin coinler, canlı sinyaller veya piyasa hakkında bana soru sorabilirsin!
-        </div>
-      </div>
-
-      <div class="px-3 py-2 bg-slate-950/50 border-t border-slate-800 flex gap-1.5 overflow-x-auto text-[10px]">
-        <button onclick="quickAsk('BTC analizi nedir?')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2 py-1 rounded-lg border border-slate-700 whitespace-nowrap">₿ BTC Durumu</button>
-        <button onclick="quickAsk('En güçlü sinyal hangi coinde?')" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-2 py-1 rounded-lg border border-slate-700 whitespace-nowrap">🔥 En Güçlü Sinyal</button>
-      </div>
-
-      <div class="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
-        <input id="chat-input" type="text" placeholder="Bir soru yazın..." onkeypress="if(event.key==='Enter') sendMessage()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500" />
-        <button onclick="sendMessage()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-2 rounded-xl text-xs transition">Gönder</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script>
-    const coins = {
-      BTC: { name: "Bitcoin", symbol: "BTCUSDT", icon: "₿", yon: "GUCLU AL", guven: "%89", tplow: 0.99, tphigh: 1.04, stop: 0.97, text: "Bitcoin destek bölgesinde hacimli duruyor. Pozitif momentum korunduğu sürece üst hedefler geçerliliğini korur." },
-      ETH: { name: "Ethereum", symbol: "ETHUSDT", icon: "💎", yon: "AL", guven: "%84", tplow: 0.985, tphigh: 1.05, stop: 0.96, text: "Ethereum ana destek seviyesinden tepki alıyor. Ağ aktivitelerindeki artış yukarı ivmeyi destekliyor." },
-      BNB: { name: "BNB", symbol: "BNBUSDT", icon: "🟡", yon: "AL", guven: "%81", tplow: 0.98, tphigh: 1.06, stop: 0.965, text: "Binance ekosistem güncellemeleri BNB talebini canlı tutuyor. Destek üzeri seyir pozitif." },
-      SOL: { name: "Solana", symbol: "SOLUSDT", icon: "☀️", yon: "GUCLU AL", guven: "%92", tplow: 0.97, tphigh: 1.08, stop: 0.95, text: "Solana DeFi ve ekosistem hacmi güçlü seyrediyor. Direnç kırılımı ile yükseliş ivme kazanabilir." },
-      AVAX: { name: "Avalanche", symbol: "AVAXUSDT", icon: "🔺", yon: "NOTR", guven: "%76", tplow: 0.975, tphigh: 1.05, stop: 0.95, text: "AVAX dar bantta konsolide oluyor. Üst direnç kırılmadan net yön tayini beklenmeli." },
-      SUI: { name: "Sui", symbol: "SUIUSDT", icon: "💧", yon: "GUCLU AL", guven: "%90", tplow: 0.97, tphigh: 1.10, stop: 0.94, text: "SUI ağındaki TVL kilitli varlık miktarı yükselişi destekliyor. Pozitif ivme korunuyor." },
-      XRP: { name: "XRP", symbol: "XRPUSDT", icon: "❌", yon: "NOTR", guven: "%78", tplow: 0.98, tphigh: 1.04, stop: 0.96, text: "XRP akümülasyon evresinde. $0.55 direncinin hacimli aşılması takibimizde." },
-      DOGE: { name: "Dogecoin", symbol: "DOGEUSDT", icon: "🐕", yon: "AL", guven: "%83", tplow: 0.96, tphigh: 1.07, stop: 0.94, text: "Dogecoin sosyal hacim verileri yükselişte. Kısa vadeli hareketlilik arttı." },
-      LINK: { name: "Chainlink", symbol: "LINKUSDT", icon: "🔗", yon: "AL", guven: "%85", tplow: 0.975, tphigh: 1.06, stop: 0.955, text: "Chainlink balina alımlarıyla destek seviyesini sağlamlaştırdı. Yön yukarı görünüyor." },
-      PEPE: { name: "Pepe", symbol: "PEPEUSDT", icon: "🐸", yon: "GUCLU AL", guven: "%87", tplow: 0.95, tphigh: 1.12, stop: 0.92, text: "PEPE memecoin hacimlerinde liderliğini koruyor. Kırılımla birlikte sert hareket ihtimali yüksek." }
-    };
-
-    let livePrices = {};
-    let activeSymbol = "BTC";
-    let isSignUpMode = false;
-
-    function formatPrice(price) {
-      const p = parseFloat(price);
-      if (isNaN(p)) return "Yükleniyor...";
-      if (p < 0.001) return "$" + p.toFixed(7);
-      if (p < 1) return "$" + p.toFixed(4);
-      return "$" + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  <title>BTC AI Pulse - Anlık Sinyaller</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
     }
+    .card {
+      background-color: #1e293b;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      width: 360px;
+      border: 1px solid #334155;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 12px;
+    }
+    .price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .GÜÇLÜ-AL, .AL { background-color: #16a34a; color: white; }
+    .GÜÇLÜ-SAT, .SAT { background-color: #dc2626; color: white; }
+    .NÖTR { background-color: #eab308; color: black; }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+    .signals-list {
+      margin-top: 12px;
+      padding-left: 20px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    button {
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover { background-color: #1d4ed8; }
+  </style>
+</head>
+<body>
 
-    async function updateBinancePrices() {
+  <div class="card">
+    <div class="header">
+      <h2 id="coin-title">BTC/USDT</h2>
+      <div id="coin-price" class="price">Yükleniyor...</div>
+    </div>
+
+    <div style="text-align: center;">
+      <div id="decision-badge" class="badge NÖTR">Lütfen bekleyin...</div>
+    </div>
+
+    <div class="stat-row">
+      <span>AI Güven Skoru:</span>
+      <strong id="score-val">-</strong>
+    </div>
+    <div class="stat-row">
+      <span>RSI (14):</span>
+      <strong id="rsi-val">-</strong>
+    </div>
+    <div class="stat-row">
+      <span>Anlık Destek:</span>
+      <strong id="support-val">-</strong>
+    </div>
+    <div class="stat-row">
+      <span>Anlık Direnç:</span>
+      <strong id="resistance-val">-</strong>
+    </div>
+
+    <h4>Sinyal Detayları:</h4>
+    <ul id="signals-list" class="signals-list">
+      <li>Veri bekleniyor...</li>
+    </ul>
+
+    <button onclick="fetchAnalysis()">Sinyalleri Yenile</button>
+  </div>
+
+  <script>
+    async function fetchAnalysis(symbol = 'BTCUSDT') {
       try {
-        const res = await fetch('https://api.binance.com/api/v3/ticker/price');
-        const data = await res.json();
+        const response = await fetch(`/api/analysis/${symbol}`);
+        const data = await response.json();
+
+        document.getElementById('coin-title').innerText = `${data.symbol}`;
+        document.getElementById('coin-price').innerText = `$${data.currentPrice}`;
         
-        if (Array.isArray(data)) {
-          data.forEach(item => {
-            livePrices[item.symbol] = parseFloat(item.price);
+        const badge = document.getElementById('decision-badge');
+        badge.innerText = data.decision;
+        badge.className = `badge ${data.decision.replace(' ', '-')}`;
+
+        document.getElementById('score-val').innerText = `%${data.score}`;
+        document.getElementById('rsi-val').innerText = data.rsi;
+        document.getElementById('support-val').innerText = `$${data.support}`;
+        document.getElementById('resistance-val').innerText = `$${data.resistance}`;
+
+        const list = document.getElementById('signals-list');
+        list.innerHTML = '';
+        if (data.signals.length === 0) {
+          list.innerHTML = '<li>Net bir aşırı alım/satım sinyali yok.</li>';
+        } else {
+          data.signals.forEach(sig => {
+            const li = document.createElement('li');
+            li.innerText = sig;
+            list.appendChild(li);
           });
-          renderCoinList();
-          updateActiveCoinUI();
         }
       } catch (err) {
-        console.error("Binance API Fiyat Çekme Hatası:", err);
+        console.error("Analiz verisi çekilemedi:", err);
       }
     }
 
-    function renderCoinList() {
-      const container = document.getElementById('coin-list');
-      container.innerHTML = '';
-
-      Object.keys(coins).forEach(key => {
-        const coin = coins[key];
-        const rawPrice = livePrices[coin.symbol];
-        const displayPrice = rawPrice ? formatPrice(rawPrice) : "Yükleniyor...";
-        const isActive = key === activeSymbol;
-        
-        const btn = document.createElement('button');
-        btn.onclick = () => selectCoin(key);
-        btn.className = `w-full text-left p-3 rounded-xl border transition flex items-center justify-between ${
-          isActive 
-            ? 'bg-amber-500/10 border-amber-500/50 text-amber-400 font-bold shadow-md' 
-            : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800/50'
-        }`;
-
-        btn.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="text-lg">${coin.icon}</span>
-            <div>
-              <div class="text-sm font-semibold">${coin.name}</div>
-              <div class="text-[10px] text-slate-500 font-mono">${key}/USDT</div>
-            </div>
-          </div>
-          <div class="text-right font-mono">
-            <div class="text-xs font-bold text-slate-100">${displayPrice}</div>
-            <div class="text-[10px] ${coin.yon.includes('AL') ? 'text-emerald-400' : 'text-amber-400'}">${coin.yon}</div>
-          </div>
-        `;
-        container.appendChild(btn);
-      });
-    }
-
-    function updateActiveCoinUI() {
-      const coin = coins[activeSymbol];
-      const p = livePrices[coin.symbol];
-
-      document.getElementById('active-coin-icon').innerText = coin.icon;
-      document.getElementById('active-coin-title').innerText = `${coin.name} (${activeSymbol}/USDT)`;
-      
-      if (p) {
-        document.getElementById('active-coin-price').innerText = formatPrice(p);
-        
-        const buyMin = formatPrice(p * coin.tplow);
-        const buyMax = formatPrice(p * 1.002);
-        const tp = formatPrice(p * coin.tphigh);
-        const stop = formatPrice(p * coin.stop);
-
-        document.getElementById('sig-alim').innerText = `${buyMin} - ${buyMax}`;
-        document.getElementById('sig-satim').innerText = tp;
-        document.getElementById('sig-stop').innerText = stop;
-      }
-
-      document.getElementById('sig-yon').innerText = coin.yon;
-      document.getElementById('sig-guven').innerText = `Güven: ${coin.guven}`;
-      document.getElementById('sig-analiz').innerText = coin.text;
-      document.getElementById('chart-symbol-label').innerText = `BINANCE:${coin.symbol}`;
-    }
-
-    function selectCoin(symbolKey) {
-      if (activeSymbol !== symbolKey) {
-        activeSymbol = symbolKey;
-        const coin = coins[symbolKey];
-        renderCoinList();
-        updateActiveCoinUI();
-        loadTradingViewWidget(`BINANCE:${coin.symbol}`);
-      }
-    }
-
-    function loadTradingViewWidget(symbol) {
-      const container = document.getElementById('tv_chart_container');
-      container.innerHTML = '';
-      
-      if (typeof TradingView !== 'undefined') {
-        new TradingView.widget({
-          "autosize": true,
-          "symbol": symbol,
-          "interval": "60",
-          "timezone": "Etc/UTC",
-          "theme": "dark",
-          "style": "1",
-          "locale": "tr",
-          "enable_publishing": false,
-          "allow_symbol_change": true,
-          "container_id": "tv_chart_container"
-        });
-      }
-    }
-
-    function renderFooterStats() {
-      const gainers = [
-        { name: "SUI", change: "+18.4%", price: "$2.10" },
-        { name: "APT", change: "+14.2%", price: "$10.45" },
-        { name: "FET", change: "+11.8%", price: "$1.62" }
-      ];
-
-      const volumes = [
-        { name: "BTC", vol: "$38.4B", price: "$83,096" },
-        { name: "ETH", vol: "$18.2B", price: "$2,695" },
-        { name: "SOL", vol: "$7.8B", price: "$149.20" }
-      ];
-
-      document.getElementById('top-gainers').innerHTML = gainers.map(g => `
-        <div class="bg-slate-900 p-2 rounded border border-slate-800 text-center">
-          <div class="font-bold text-slate-200">${g.name}</div>
-          <div class="text-emerald-400 font-bold">${g.change}</div>
-          <div class="text-[10px] text-slate-500">${g.price}</div>
-        </div>
-      `).join('');
-
-      document.getElementById('top-volume').innerHTML = volumes.map(v => `
-        <div class="bg-slate-900 p-2 rounded border border-slate-800 text-center">
-          <div class="font-bold text-slate-200">${v.name}</div>
-          <div class="text-amber-400 font-bold">${v.vol}</div>
-          <div class="text-[10px] text-slate-500">${v.price}</div>
-        </div>
-      `).join('');
-    }
-
-    // AUTH & VERİ KİLİTLEME MANTIĞI
-    function toggleAuthModal() {
-      const modal = document.getElementById('auth-modal');
-      modal.classList.toggle('hidden');
-    }
-
-    function toggleAuthMode() {
-      isSignUpMode = !isSignUpMode;
-      document.getElementById('modal-title').innerText = isSignUpMode ? "Hesap Oluştur" : "Giriş Yap";
-      document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "Kayıt Ol" : "Giriş Yap";
-      document.getElementById('auth-switch-btn').innerText = isSignUpMode ? "Zaten hesabın var mı? Giriş Yap" : "Hesabın yok mu? Kayıt Ol";
-    }
-
-    function handleAuth(event) {
-      event.preventDefault();
-      const email = document.getElementById('auth-email').value;
-      
-      localStorage.setItem('user_email', email);
-      
-      updateUserHeader();
-      toggleAuthModal();
-    }
-
-    function updateUserHeader() {
-      const email = localStorage.getItem('user_email');
-      const section = document.getElementById('user-auth-section');
-      const lockOverlay = document.getElementById('content-lock-overlay');
-
-      if (email) {
-        section.innerHTML = `
-          <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
-            <span class="text-xs text-amber-400 font-mono">👤 ${email.split('@')[0]}</span>
-            <button onclick="logoutUser()" class="text-[10px] bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 px-2 py-0.5 rounded border border-rose-500/30">Çıkış</button>
-          </div>
-        `;
-        // Giriş yapıldıysa kilit perdesini kaldır
-        lockOverlay.classList.add('hidden');
-      } else {
-        section.innerHTML = `
-          <button onclick="toggleAuthModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-lg text-xs md:text-sm border border-slate-700 transition flex items-center gap-1.5">
-            <span>✉️</span>
-            <span>Giriş Yap / Kayıt Ol</span>
-          </button>
-        `;
-        // Giriş yapılmadıysa kilit perdesini göster
-        lockOverlay.classList.remove('hidden');
-      }
-    }
-
-    function logoutUser() {
-      localStorage.removeItem('user_email');
-      updateUserHeader();
-    }
-
-    // CHATBOT MANTIĞI
-    function toggleChat() {
-      const win = document.getElementById('chat-window');
-      win.classList.toggle('hidden');
-    }
-
-    function quickAsk(text) {
-      document.getElementById('chat-input').value = text;
-      sendMessage();
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const msgBox = document.getElementById('chat-messages');
-
-      msgBox.innerHTML += `
-        <div class="bg-amber-500/20 text-amber-300 p-2.5 rounded-xl border border-amber-500/30 ml-6 text-right">
-          ${text}
-        </div>
-      `;
-      input.value = '';
-      msgBox.scrollTop = msgBox.scrollHeight;
-
-      setTimeout(() => {
-        let reply = "Piyasayı inceliyorum... Borsa verilerine göre pozitif görünüm devam ediyor.";
-        const lower = text.toLowerCase();
-
-        if (lower.includes('btc') || lower.includes('bitcoin')) {
-          const btcPrice = livePrices['BTCUSDT'] ? formatPrice(livePrices['BTCUSDT']) : '$83,000';
-          reply = `Bitcoin şu an ${btcPrice} seviyesinde. AI sinyalimiz 'GÜÇLÜ AL' yönünde ve $82,000 seviyesi ana destek olarak korunuyor.`;
-        } else if (lower.includes('güçlü') || lower.includes('sinyal')) {
-          reply = "Şu an en yüksek AI güven oranına sahip coinler: Solana (%92) ve Sui (%90) ile 'GÜÇLÜ AL' sinyalinde.";
-        } else if (lower.includes('eth') || lower.includes('ethereum')) {
-          reply = "Ethereum $2,650 desteğinde tutunuyor. Ağ hacmi yükselişte, hedef $2,850.";
-        }
-
-        msgBox.innerHTML += `
-          <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700 text-slate-200 mr-6">
-            🤖 ${reply}
-          </div>
-        `;
-        msgBox.scrollTop = msgBox.scrollHeight;
-      }, 600);
-    }
-
-    window.onload = async () => {
-      renderCoinList();
-      selectCoin('BTC');
-      renderFooterStats();
-      updateUserHeader();
-      
-      setTimeout(() => {
-        loadTradingViewWidget('BINANCE:BTCUSDT');
-      }, 300);
-
-      await updateBinancePrices();
-      setInterval(updateBinancePrices, 5000);
-    };
+    // Sayfa açıldığında otomatik çalıştır
+    fetchAnalysis();
   </script>
 </body>
 </html>
