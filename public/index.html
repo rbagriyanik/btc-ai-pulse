@@ -22,7 +22,7 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       border: 1px solid #334155;
     }
     .header {
@@ -32,8 +32,20 @@
       border-bottom: 1px solid #334155;
       padding-bottom: 12px;
     }
+    .coin-select {
+      background-color: #0f172a;
+      color: #38bdf8;
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      outline: none;
+      cursor: pointer;
+      max-width: 60%;
+    }
     .price {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: bold;
       color: #38bdf8;
     }
@@ -86,16 +98,43 @@
 
   <div class="card">
     <div class="header">
-      <h2 id="coin-title">BTC/USDT</h2>
+      <!-- Tam Liste Coin Seçici -->
+      <select id="symbol-select" class="coin-select" onchange="calculateSignals()">
+        <option value="BTCUSDT">Bitcoin (BTC)</option>
+        <option value="ETHUSDT">Ethereum (ETH)</option>
+        <option value="SOLUSDT">Solana (SOL)</option>
+        <option value="XRPUSDT">XRP (XRP)</option>
+        <option value="BNBUSDT">Binance Coin (BNB)</option>
+        <option value="DOGEUSDT">Dogecoin (DOGE)</option>
+        <option value="ADAUSDT">Cardano (ADA)</option>
+        <option value="TRXUSDT">TRON (TRX)</option>
+        <option value="AVAXUSDT">Avalanche (AVAX)</option>
+        <option value="SHIBUSDT">Shiba Inu (SHIB)</option>
+        <option value="LINKUSDT">Chainlink (LINK)</option>
+        <option value="SUIUSDT">Sui (SUI)</option>
+        <option value="POLUSDT">Polygon (POL)</option>
+        <option value="LTCUSDT">Litecoin (LTC)</option>
+        <option value="NEARUSDT">Near Protocol (NEAR)</option>
+        <option value="UNIUSDT">Uniswap (UNI)</option>
+        <option value="DOTUSDT">Polkadot (DOT)</option>
+        <option value="PEPEUSDT">Pepe (PEPE)</option>
+        <option value="FETUSDT">Fetch.ai (FET)</option>
+        <option value="TAOUSDT">Bittensor (TAO)</option>
+        <option value="BCHUSDT">Bitcoin Cash (BCH)</option>
+        <option value="XLMUSDT">Stellar (XLM)</option>
+        <option value="OPUSDT">Optimism (OP)</option>
+        <option value="APTUSDT">Aptos (APT)</option>
+        <option value="ARBUSDT">Arbitrum (ARB)</option>
+      </select>
       <div id="coin-price" class="price">Yükleniyor...</div>
     </div>
 
     <div id="decision-badge" class="badge NÖTR">Analiz Ediliyor...</div>
 
-    <!-- Duygu Analizi (Fear & Greed Index) Kısımı -->
+    <!-- Duygu Analizi -->
     <div class="sentiment-box">
       <div class="stat-row" style="margin:0;">
-        <span>Piyasa Duygu Havası:</span>
+        <span>Genel Piyasa Havası:</span>
         <strong id="fng-val">Yükleniyor...</strong>
       </div>
     </div>
@@ -151,14 +190,12 @@
       return 100 - (100 / (1 + rs));
     }
 
-    // Fear & Greed Index Çekme Fonksiyonu
     async function fetchFearAndGreed() {
       try {
         const res = await fetch('https://api.alternative.me/fng/');
         const data = await res.json();
         const item = data.data[0];
         
-        // Türkçe Çeviriler
         let valueText = item.value_classification;
         if (valueText === "Extreme Fear") valueText = "Aşırı Korku 😱";
         else if (valueText === "Fear") valueText = "Korku 😨";
@@ -174,12 +211,15 @@
       }
     }
 
-    async function calculateSignals(symbol = 'BTCUSDT') {
+    async function calculateSignals() {
+      const symbol = document.getElementById('symbol-select').value;
+      
+      document.getElementById('coin-price').innerText = "Yükleniyor...";
+      document.getElementById('decision-badge').innerText = "Analiz Ediliyor...";
+
       try {
-        // Duygu Endeksini Al
         const fngScore = await fetchFearAndGreed();
 
-        // Binance Verisini Al
         const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=15m&limit=100`);
         const data = await res.json();
 
@@ -195,7 +235,6 @@
         let score = 50;
         let signals = [];
 
-        // Fear & Greed Katkısı
         if (fngScore < 25) {
           score += 10;
           signals.push("Piyasada Aşırı Korku Var (Tarihsel Dip / Alım Fırsatı Olabilir)");
@@ -204,7 +243,6 @@
           signals.push("Piyasada Aşırı Açgözlülük Var (Düzeltme Riski Yüksek)");
         }
 
-        // RSI Katkısı
         if (rsi < 30) {
           score += 25;
           signals.push("RSI Aşırı Satım Bölgesinde (Dip seviyede)");
@@ -215,7 +253,6 @@
           signals.push("RSI Dengeli Bölgede (30 - 70 arası)");
         }
 
-        // Destek & Direnç Katkısı
         if (currentPrice <= support * 1.002) {
           score += 15;
           signals.push("Fiyat anlık desteğe çok yakın");
@@ -231,9 +268,12 @@
         else if (score <= 30) decision = "GÜÇLÜ SAT";
         else if (score < 45) decision = "SAT";
 
-        // Arayüz Güncelleme
-        document.getElementById('coin-title').innerText = `${symbol}`;
-        document.getElementById('coin-price').innerText = `$${currentPrice.toLocaleString('en-US')}`;
+        // Küçük fiyatlı koinler (SHIB, PEPE vb.) için basamak hassasiyeti ayarı
+        let formattedPrice = currentPrice < 1 
+          ? `$${currentPrice.toFixed(8)}` 
+          : `$${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        document.getElementById('coin-price').innerText = formattedPrice;
         
         const badge = document.getElementById('decision-badge');
         badge.innerText = decision;
@@ -241,8 +281,8 @@
 
         document.getElementById('score-val').innerText = `%${score}`;
         document.getElementById('rsi-val').innerText = rsi.toFixed(2);
-        document.getElementById('support-val').innerText = `$${support.toLocaleString('en-US')}`;
-        document.getElementById('resistance-val').innerText = `$${resistance.toLocaleString('en-US')}`;
+        document.getElementById('support-val').innerText = `$${support}`;
+        document.getElementById('resistance-val').innerText = `$${resistance}`;
 
         const list = document.getElementById('signals-list');
         list.innerHTML = '';
