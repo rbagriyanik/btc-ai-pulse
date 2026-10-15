@@ -22,7 +22,7 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       border: 1px solid #334155;
     }
     .header {
@@ -55,6 +55,13 @@
       margin: 10px 0;
       font-size: 0.95rem;
     }
+    .sentiment-box {
+      background-color: #0f172a;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 12px 0;
+      border: 1px dashed #475569;
+    }
     .signals-list {
       margin-top: 12px;
       padding-left: 20px;
@@ -85,6 +92,14 @@
 
     <div id="decision-badge" class="badge NÖTR">Analiz Ediliyor...</div>
 
+    <!-- Duygu Analizi (Fear & Greed Index) Kısımı -->
+    <div class="sentiment-box">
+      <div class="stat-row" style="margin:0;">
+        <span>Piyasa Duygu Havası:</span>
+        <strong id="fng-val">Yükleniyor...</strong>
+      </div>
+    </div>
+
     <div class="stat-row">
       <span>AI Sinyal Skoru:</span>
       <strong id="score-val">-</strong>
@@ -104,14 +119,13 @@
 
     <h4>Sinyal Gerekçeleri:</h4>
     <ul id="signals-list" class="signals-list">
-      <li>Veriler Binance'den çekiliyor...</li>
+      <li>Veriler çekiliyor...</li>
     </ul>
 
     <button onclick="calculateSignals()">Sinyalleri Yenile</button>
   </div>
 
   <script>
-    // Tarayıcı içinde RSI Hesaplama
     function calculateRSI(prices, period = 14) {
       let gains = 0, losses = 0;
       for (let i = 1; i <= period; i++) {
@@ -137,44 +151,78 @@
       return 100 - (100 / (1 + rs));
     }
 
+    // Fear & Greed Index Çekme Fonksiyonu
+    async function fetchFearAndGreed() {
+      try {
+        const res = await fetch('https://api.alternative.me/fng/');
+        const data = await res.json();
+        const item = data.data[0];
+        
+        // Türkçe Çeviriler
+        let valueText = item.value_classification;
+        if (valueText === "Extreme Fear") valueText = "Aşırı Korku 😱";
+        else if (valueText === "Fear") valueText = "Korku 😨";
+        else if (valueText === "Neutral") valueText = "Nötr 😐";
+        else if (valueText === "Greed") valueText = "Açgözlülük 😏";
+        else if (valueText === "Extreme Greed") valueText = "Aşırı Açgözlülük 🚀";
+
+        document.getElementById('fng-val').innerText = `${item.value}/100 (${valueText})`;
+        return parseInt(item.value);
+      } catch (e) {
+        document.getElementById('fng-val').innerText = "Veri Alınamadı";
+        return 50;
+      }
+    }
+
     async function calculateSignals(symbol = 'BTCUSDT') {
       try {
-        // Binance API'den doğrudan 15 dakikalık mumları çekiyoruz
+        // Duygu Endeksini Al
+        const fngScore = await fetchFearAndGreed();
+
+        // Binance Verisini Al
         const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=15m&limit=100`);
         const data = await res.json();
 
         const closePrices = data.map(c => parseFloat(c[4]));
         const currentPrice = closePrices[closePrices.length - 1];
 
-        // RSI Hesaplama
         const rsi = calculateRSI(closePrices, 14);
 
-        // Destek & Direnç (Son 20 mum)
         const recent20 = closePrices.slice(-20);
         const support = Math.min(...recent20);
         const resistance = Math.max(...recent20);
 
-        // Sinyal Skorlama
         let score = 50;
         let signals = [];
 
+        // Fear & Greed Katkısı
+        if (fngScore < 25) {
+          score += 10;
+          signals.push("Piyasada Aşırı Korku Var (Tarihsel Dip / Alım Fırsatı Olabilir)");
+        } else if (fngScore > 75) {
+          score -= 10;
+          signals.push("Piyasada Aşırı Açgözlülük Var (Düzeltme Riski Yüksek)");
+        }
+
+        // RSI Katkısı
         if (rsi < 30) {
           score += 25;
-          signals.push("RSI Aşırı Satım Bölgesinde (Dip seviyede / AL Fırsatı)");
+          signals.push("RSI Aşırı Satım Bölgesinde (Dip seviyede)");
         } else if (rsi > 70) {
           score -= 25;
-          signals.push("RSI Aşırı Alım Bölgesinde (Tavan seviyede / Düzeltme Riski)");
+          signals.push("RSI Aşırı Alım Bölgesinde (Kar Satışı Riski)");
         } else {
           signals.push("RSI Dengeli Bölgede (30 - 70 arası)");
         }
 
+        // Destek & Direnç Katkısı
         if (currentPrice <= support * 1.002) {
           score += 15;
-          signals.push("Fiyat anlık desteğe çok yakın (Tepki alımı gelebilir)");
+          signals.push("Fiyat anlık desteğe çok yakın");
         }
         if (currentPrice >= resistance * 0.998) {
           score -= 15;
-          signals.push("Fiyat anlık direnç bölgesinde (Kar satışı gelebilir)");
+          signals.push("Fiyat anlık direnç bölgesinde");
         }
 
         let decision = "NÖTR / TUT";
@@ -183,7 +231,7 @@
         else if (score <= 30) decision = "GÜÇLÜ SAT";
         else if (score < 45) decision = "SAT";
 
-        // Arayüzü Güncelleme
+        // Arayüz Güncelleme
         document.getElementById('coin-title').innerText = `${symbol}`;
         document.getElementById('coin-price').innerText = `$${currentPrice.toLocaleString('en-US')}`;
         
@@ -205,12 +253,10 @@
         });
 
       } catch (err) {
-        console.error("Binance verisi alınamadı:", err);
-        document.getElementById('signals-list').innerHTML = '<li style="color:red">Veri çekilirken hata oluştu.</li>';
+        console.error("Veri hatası:", err);
       }
     }
 
-    // Sayfa yüklendiğinde çalıştır
     calculateSignals();
   </script>
 </body>
